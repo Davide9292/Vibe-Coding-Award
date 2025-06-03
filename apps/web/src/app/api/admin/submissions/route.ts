@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { auth } from "@/lib/auth";
-
-const prisma = new PrismaClient();
 
 export async function GET() {
   try {
+    // Skip database operations during build time
+    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+      return NextResponse.json({ 
+        error: "Database not available during build" 
+      }, { status: 503 });
+    }
+
     const session = await auth();
     
     if (!session?.user) {
@@ -18,47 +22,58 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Get current month/year
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1;
-    const currentYear = now.getFullYear();
+    // Dynamically import Prisma only when needed
+    const { PrismaClient } = await import("@prisma/client");
+    const prisma = new PrismaClient();
 
-    // Get submissions for current month
-    const submissions = await prisma.project.findMany({
-      where: {
-        submissionMonth: currentMonth,
-        submissionYear: currentYear
-      },
-      include: {
-        user: {
-          select: {
-            name: true,
-            username: true,
-            email: true
+    try {
+      // Get current month/year
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1;
+      const currentYear = now.getFullYear();
+
+      // Get submissions for current month
+      const submissions = await prisma.project.findMany({
+        where: {
+          submissionMonth: currentMonth,
+          submissionYear: currentYear
+        },
+        include: {
+          user: {
+            select: {
+              name: true,
+              username: true,
+              email: true
+            }
+          },
+          _count: {
+            select: {
+              votes: true
+            }
           }
         },
-        _count: {
-          select: {
-            votes: true
-          }
+        orderBy: {
+          submittedAt: "desc"
         }
-      },
-      orderBy: {
-        submittedAt: "desc"
-      }
-    });
+      });
 
-    const formattedSubmissions = submissions.map((submission: any) => ({
-      id: submission.id,
-      title: submission.title,
-      description: submission.description,
-      status: submission.status,
-      author: submission.user.name || submission.user.username || "Anonymous",
-      submittedAt: submission.submittedAt.toISOString(),
-      voteCount: submission._count.votes
-    }));
+      const formattedSubmissions = submissions.map((submission: any) => ({
+        id: submission.id,
+        title: submission.title,
+        description: submission.description,
+        status: submission.status,
+        author: submission.user.name || submission.user.username || "Anonymous",
+        submittedAt: submission.submittedAt.toISOString(),
+        voteCount: submission._count.votes
+      }));
 
-    return NextResponse.json({ submissions: formattedSubmissions });
+      await prisma.$disconnect();
+      return NextResponse.json({ submissions: formattedSubmissions });
+
+    } catch (dbError) {
+      await prisma.$disconnect();
+      throw dbError;
+    }
 
   } catch (error) {
     console.error("Submissions fetch error:", error);

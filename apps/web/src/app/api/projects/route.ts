@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { sendSubmissionConfirmation } from "@/lib/email";
 
-// Create a direct Prisma client instance
-const prisma = new PrismaClient();
-
 export async function POST(request: NextRequest) {
   try {
+    // Skip database operations during build time
+    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+      return NextResponse.json({ 
+        error: "Database not available during build" 
+      }, { status: 503 });
+    }
+
     const session = await auth();
     
     if (!session?.user?.id) {
@@ -17,116 +20,128 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
-    
-    // Validate required fields
-    const {
-      title,
-      description,
-      vibeNarrative,
-      category,
-      tags = [],
-      demoUrl,
-      repoUrl,
-      videoUrl,
-      downloadUrl,
-      aiTools = [],
-      customAiTool,
-      aiGeneratedPercent = 0,
-      aiRefactoredPercent = 0,
-      humanWrittenPercent = 100,
-      learnings,
-      challenges,
-      teamMembers = []
-    } = body;
+    // Dynamically import Prisma only when needed
+    const { PrismaClient } = await import("@prisma/client");
+    const prisma = new PrismaClient();
 
-    if (!title || !description || !vibeNarrative) {
-      return NextResponse.json(
-        { error: "Title, description, and vibe narrative are required" },
-        { status: 400 }
-      );
-    }
-
-    // Get current month and year for submission
-    const now = new Date();
-    const submissionMonth = now.getMonth() + 1;
-    const submissionYear = now.getFullYear();
-
-    // Prepare AI tools array
-    const allAiTools = [...aiTools];
-    if (aiTools.includes("Other") && customAiTool) {
-      allAiTools.push(customAiTool);
-    }
-
-    // Create project with team members
-    const project = await prisma.project.create({
-      data: {
+    try {
+      const body = await request.json();
+      
+      // Validate required fields
+      const {
         title,
         description,
         vibeNarrative,
-        category: category || null,
-        tags,
-        demoUrl: demoUrl || null,
-        repoUrl: repoUrl || null,
-        videoUrl: videoUrl || null,
-        downloadUrl: downloadUrl || null,
-        aiTools: allAiTools,
-        aiGeneratedPercent,
-        aiRefactoredPercent,
-        humanWrittenPercent,
-        learnings: learnings || null,
-        challenges: challenges || null,
-        submissionMonth,
-        submissionYear,
-        status: "SUBMITTED",
-        submittedAt: new Date(),
-        userId: session.user.id,
-        teamMembers: {
-          create: teamMembers.map((member: any) => ({
-            name: member.name,
-            role: member.role || null,
-            email: member.email || null,
-            github: member.github || null,
-          }))
-        }
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-            email: true,
+        category,
+        tags = [],
+        demoUrl,
+        repoUrl,
+        videoUrl,
+        downloadUrl,
+        aiTools = [],
+        customAiTool,
+        aiGeneratedPercent = 0,
+        aiRefactoredPercent = 0,
+        humanWrittenPercent = 100,
+        learnings,
+        challenges,
+        teamMembers = []
+      } = body;
+
+      if (!title || !description || !vibeNarrative) {
+        await prisma.$disconnect();
+        return NextResponse.json(
+          { error: "Title, description, and vibe narrative are required" },
+          { status: 400 }
+        );
+      }
+
+      // Get current month and year for submission
+      const now = new Date();
+      const submissionMonth = now.getMonth() + 1;
+      const submissionYear = now.getFullYear();
+
+      // Prepare AI tools array
+      const allAiTools = [...aiTools];
+      if (aiTools.includes("Other") && customAiTool) {
+        allAiTools.push(customAiTool);
+      }
+
+      // Create project with team members
+      const project = await prisma.project.create({
+        data: {
+          title,
+          description,
+          vibeNarrative,
+          category: category || null,
+          tags,
+          demoUrl: demoUrl || null,
+          repoUrl: repoUrl || null,
+          videoUrl: videoUrl || null,
+          downloadUrl: downloadUrl || null,
+          aiTools: allAiTools,
+          aiGeneratedPercent,
+          aiRefactoredPercent,
+          humanWrittenPercent,
+          learnings: learnings || null,
+          challenges: challenges || null,
+          submissionMonth,
+          submissionYear,
+          status: "SUBMITTED",
+          submittedAt: new Date(),
+          userId: session.user.id,
+          teamMembers: {
+            create: teamMembers.map((member: any) => ({
+              name: member.name,
+              role: member.role || null,
+              email: member.email || null,
+              github: member.github || null,
+            }))
           }
         },
-        teamMembers: true,
-      }
-    });
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              email: true,
+            }
+          },
+          teamMembers: true,
+        }
+      });
 
-    // Send confirmation email
-    if (session.user.email) {
-      try {
-        await sendSubmissionConfirmation(
-          session.user.email,
-          session.user.name || session.user.email,
-          title
-        );
-      } catch (emailError) {
-        console.error("Failed to send confirmation email:", emailError);
-        // Don't fail the submission if email fails
+      // Send confirmation email
+      if (session.user.email) {
+        try {
+          await sendSubmissionConfirmation(
+            session.user.email,
+            session.user.name || session.user.email,
+            title
+          );
+        } catch (emailError) {
+          console.error("Failed to send confirmation email:", emailError);
+          // Don't fail the submission if email fails
+        }
       }
+
+      await prisma.$disconnect();
+      return NextResponse.json({
+        success: true,
+        project: {
+          id: project.id,
+          title: project.title,
+          description: project.description,
+          status: project.status,
+          submittedAt: project.submittedAt,
+        }
+      });
+
+    } catch (dbError) {
+      await prisma.$disconnect();
+      throw dbError;
     }
-
-    return NextResponse.json({
-      success: true,
-      project: {
-        id: project.id,
-        title: project.title,
-        description: project.description,
-        status: project.status,
-        submittedAt: project.submittedAt,
-      }
-    });
 
   } catch (error) {
     console.error("Project submission error:", error);
@@ -139,86 +154,106 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const category = searchParams.get("category");
-    const search = searchParams.get("search");
-    const sortBy = searchParams.get("sortBy") || "newest";
-    const limit = parseInt(searchParams.get("limit") || "20");
-    const offset = parseInt(searchParams.get("offset") || "0");
-
-    // Build where clause
-    const where: any = {
-      status: "SUBMITTED"
-    };
-
-    if (category && category !== "All Categories") {
-      where.category = category;
+    // Skip database operations during build time
+    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+      return NextResponse.json({
+        projects: [],
+        total: 0,
+        hasMore: false,
+      });
     }
 
-    if (search) {
-      where.OR = [
-        { title: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-        { tags: { hasSome: [search] } }
-      ];
-    }
+    // Dynamically import Prisma only when needed
+    const { PrismaClient } = await import("@prisma/client");
+    const prisma = new PrismaClient();
 
-    // Build orderBy clause
-    let orderBy: any = { createdAt: "desc" };
-    
-    if (sortBy === "oldest") {
-      orderBy = { createdAt: "asc" };
-    } else if (sortBy === "popular") {
-      orderBy = { votes: { _count: "desc" } };
-    }
+    try {
+      const { searchParams } = new URL(request.url);
+      const category = searchParams.get("category");
+      const search = searchParams.get("search");
+      const sortBy = searchParams.get("sortBy") || "newest";
+      const limit = parseInt(searchParams.get("limit") || "20");
+      const offset = parseInt(searchParams.get("offset") || "0");
 
-    const projects = await prisma.project.findMany({
-      where,
-      orderBy,
-      take: limit,
-      skip: offset,
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-          }
-        },
-        votes: {
-          select: {
-            id: true,
-          }
-        },
-        _count: {
-          select: {
-            votes: true,
+      // Build where clause
+      const where: any = {
+        status: "SUBMITTED"
+      };
+
+      if (category && category !== "All Categories") {
+        where.category = category;
+      }
+
+      if (search) {
+        where.OR = [
+          { title: { contains: search, mode: "insensitive" } },
+          { description: { contains: search, mode: "insensitive" } },
+          { tags: { hasSome: [search] } }
+        ];
+      }
+
+      // Build orderBy clause
+      let orderBy: any = { createdAt: "desc" };
+      
+      if (sortBy === "oldest") {
+        orderBy = { createdAt: "asc" };
+      } else if (sortBy === "popular") {
+        orderBy = { votes: { _count: "desc" } };
+      }
+
+      const projects = await prisma.project.findMany({
+        where,
+        orderBy,
+        take: limit,
+        skip: offset,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+            }
+          },
+          votes: {
+            select: {
+              id: true,
+            }
+          },
+          _count: {
+            select: {
+              votes: true,
+            }
           }
         }
-      }
-    });
+      });
 
-    const total = await prisma.project.count({ where });
+      const total = await prisma.project.count({ where });
 
-    return NextResponse.json({
-      projects: projects.map((project: any) => ({
-        id: project.id,
-        title: project.title,
-        description: project.description,
-        category: project.category,
-        tags: project.tags,
-        author: project.user.name || project.user.username || "Anonymous",
-        submissionDate: project.submittedAt,
-        demoUrl: project.demoUrl,
-        repoUrl: project.repoUrl,
-        aiTools: project.aiTools,
-        isWinner: project.isWinner,
-        isPeoplesChoice: project.isPeoplesChoice,
-        votes: project._count.votes,
-      })),
-      total,
-      hasMore: offset + limit < total,
-    });
+      await prisma.$disconnect();
+      return NextResponse.json({
+        projects: projects.map((project: any) => ({
+          id: project.id,
+          title: project.title,
+          description: project.description,
+          category: project.category,
+          tags: project.tags,
+          author: project.user.name || project.user.username || "Anonymous",
+          submissionDate: project.submittedAt,
+          demoUrl: project.demoUrl,
+          repoUrl: project.repoUrl,
+          aiTools: project.aiTools,
+          isWinner: project.isWinner,
+          isPeoplesChoice: project.isPeoplesChoice,
+          votes: project._count.votes,
+        })),
+        total,
+        hasMore: offset + limit < total,
+      });
+
+    } catch (dbError) {
+      await prisma.$disconnect();
+      throw dbError;
+    }
 
   } catch (error) {
     console.error("Projects fetch error:", error);

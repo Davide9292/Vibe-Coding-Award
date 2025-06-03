@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { auth } from "@/lib/auth";
-
-// Create a direct Prisma client instance
-const prisma = new PrismaClient();
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    // Skip database operations during build time
+    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+      return NextResponse.json({ 
+        error: "Database not available during build" 
+      }, { status: 503 });
+    }
+
     const session = await auth();
     
     if (!session?.user?.id) {
@@ -19,64 +22,77 @@ export async function POST(
       );
     }
 
-    const projectId = params.id;
+    // Dynamically import Prisma only when needed
+    const { PrismaClient } = await import("@prisma/client");
+    const prisma = new PrismaClient();
 
-    // Check if project exists
-    const project = await prisma.project.findUnique({
-      where: { id: projectId }
-    });
+    try {
+      const projectId = params.id;
 
-    if (!project) {
-      return NextResponse.json(
-        { error: "Project not found" },
-        { status: 404 }
-      );
-    }
+      // Check if project exists
+      const project = await prisma.project.findUnique({
+        where: { id: projectId }
+      });
 
-    // Get current month and year
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1;
-    const currentYear = now.getFullYear();
+      if (!project) {
+        await prisma.$disconnect();
+        return NextResponse.json(
+          { error: "Project not found" },
+          { status: 404 }
+        );
+      }
 
-    // Check if user already voted for this project this month
-    const existingVote = await prisma.vote.findUnique({
-      where: {
-        userId_projectId_month_year: {
+      // Get current month and year
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1;
+      const currentYear = now.getFullYear();
+
+      // Check if user already voted for this project this month
+      const existingVote = await prisma.vote.findUnique({
+        where: {
+          userId_projectId_month_year: {
+            userId: session.user.id,
+            projectId,
+            month: currentMonth,
+            year: currentYear,
+          }
+        }
+      });
+
+      if (existingVote) {
+        await prisma.$disconnect();
+        return NextResponse.json(
+          { error: "You have already voted for this project this month" },
+          { status: 400 }
+        );
+      }
+
+      // Create the vote
+      const vote = await prisma.vote.create({
+        data: {
           userId: session.user.id,
           projectId,
           month: currentMonth,
           year: currentYear,
         }
-      }
-    });
+      });
 
-    if (existingVote) {
-      return NextResponse.json(
-        { error: "You have already voted for this project this month" },
-        { status: 400 }
-      );
+      // Get updated vote count
+      const voteCount = await prisma.vote.count({
+        where: { projectId }
+      });
+
+      await prisma.$disconnect();
+      return NextResponse.json({
+        success: true,
+        voteCount,
+        message: "Vote recorded successfully"
+      });
+
+    } catch (dbError) {
+      await prisma.$disconnect();
+      throw dbError;
     }
-
-    // Create the vote
-    const vote = await prisma.vote.create({
-      data: {
-        userId: session.user.id,
-        projectId,
-        month: currentMonth,
-        year: currentYear,
-      }
-    });
-
-    // Get updated vote count
-    const voteCount = await prisma.vote.count({
-      where: { projectId }
-    });
-
-    return NextResponse.json({
-      success: true,
-      voteCount,
-      message: "Vote recorded successfully"
-    });
 
   } catch (error) {
     console.error("Voting error:", error);
@@ -92,6 +108,13 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Skip database operations during build time
+    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+      return NextResponse.json({ 
+        error: "Database not available during build" 
+      }, { status: 503 });
+    }
+
     const session = await auth();
     
     if (!session?.user?.id) {
@@ -101,40 +124,52 @@ export async function DELETE(
       );
     }
 
-    const projectId = params.id;
+    // Dynamically import Prisma only when needed
+    const { PrismaClient } = await import("@prisma/client");
+    const prisma = new PrismaClient();
 
-    // Get current month and year
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1;
-    const currentYear = now.getFullYear();
+    try {
+      const projectId = params.id;
 
-    // Find and delete the vote
-    const deletedVote = await prisma.vote.deleteMany({
-      where: {
-        userId: session.user.id,
-        projectId,
-        month: currentMonth,
-        year: currentYear,
+      // Get current month and year
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1;
+      const currentYear = now.getFullYear();
+
+      // Find and delete the vote
+      const deletedVote = await prisma.vote.deleteMany({
+        where: {
+          userId: session.user.id,
+          projectId,
+          month: currentMonth,
+          year: currentYear,
+        }
+      });
+
+      if (deletedVote.count === 0) {
+        await prisma.$disconnect();
+        return NextResponse.json(
+          { error: "Vote not found" },
+          { status: 404 }
+        );
       }
-    });
 
-    if (deletedVote.count === 0) {
-      return NextResponse.json(
-        { error: "Vote not found" },
-        { status: 404 }
-      );
+      // Get updated vote count
+      const voteCount = await prisma.vote.count({
+        where: { projectId }
+      });
+
+      await prisma.$disconnect();
+      return NextResponse.json({
+        success: true,
+        voteCount,
+        message: "Vote removed successfully"
+      });
+
+    } catch (dbError) {
+      await prisma.$disconnect();
+      throw dbError;
     }
-
-    // Get updated vote count
-    const voteCount = await prisma.vote.count({
-      where: { projectId }
-    });
-
-    return NextResponse.json({
-      success: true,
-      voteCount,
-      message: "Vote removed successfully"
-    });
 
   } catch (error) {
     console.error("Vote removal error:", error);

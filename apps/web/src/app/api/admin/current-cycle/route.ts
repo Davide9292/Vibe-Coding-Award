@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { auth } from "@/lib/auth";
-
-const prisma = new PrismaClient();
 
 export async function GET() {
   try {
+    // Skip database operations during build time
+    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+      return NextResponse.json({ 
+        error: "Database not available during build" 
+      }, { status: 503 });
+    }
+
     const session = await auth();
     
     if (!session?.user) {
@@ -18,28 +22,39 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Get current month/year
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1;
-    const currentYear = now.getFullYear();
+    // Dynamically import Prisma only when needed
+    const { PrismaClient } = await import("@prisma/client");
+    const prisma = new PrismaClient();
 
-    // Find current award cycle
-    const cycle = await prisma.awardCycle.findFirst({
-      where: {
-        month: currentMonth,
-        year: currentYear
-      },
-      include: {
-        _count: {
-          select: {
-            projects: true,
-            votes: true
+    try {
+      // Get current month/year
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1;
+      const currentYear = now.getFullYear();
+
+      // Find current award cycle
+      const cycle = await prisma.awardCycle.findFirst({
+        where: {
+          month: currentMonth,
+          year: currentYear
+        },
+        include: {
+          _count: {
+            select: {
+              projects: true,
+              votes: true
+            }
           }
         }
-      }
-    });
+      });
 
-    return NextResponse.json({ cycle });
+      await prisma.$disconnect();
+      return NextResponse.json({ cycle });
+
+    } catch (dbError) {
+      await prisma.$disconnect();
+      throw dbError;
+    }
 
   } catch (error) {
     console.error("Current cycle fetch error:", error);
