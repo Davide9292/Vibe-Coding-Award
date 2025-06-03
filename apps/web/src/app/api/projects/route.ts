@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { sendSubmissionConfirmation } from "@/lib/email";
+import { createSafePrismaClient, isBuildTime } from "@/lib/prisma-safe";
 
 export async function POST(request: NextRequest) {
   try {
-    // Skip database operations during build time
-    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+    // Return early if we're in build time
+    if (isBuildTime()) {
       return NextResponse.json({ 
         error: "Database not available during build" 
       }, { status: 503 });
@@ -20,9 +21,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Dynamically import Prisma only when needed
-    const { PrismaClient } = await import("@prisma/client");
-    const prisma = new PrismaClient();
+    let prisma: any;
+    try {
+      prisma = await createSafePrismaClient();
+    } catch (error) {
+      return NextResponse.json({ 
+        error: "Database client not available" 
+      }, { status: 503 });
+    }
 
     try {
       const body = await request.json();
@@ -68,6 +74,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Create project with team members
+      // @ts-ignore - Dynamic Prisma client
       const project = await prisma.project.create({
         data: {
           title,
@@ -154,8 +161,8 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // Skip database operations during build time
-    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+    // Return early if we're in build time
+    if (isBuildTime()) {
       return NextResponse.json({
         projects: [],
         total: 0,
@@ -163,9 +170,16 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Dynamically import Prisma only when needed
-    const { PrismaClient } = await import("@prisma/client");
-    const prisma = new PrismaClient();
+    let prisma: any;
+    try {
+      prisma = await createSafePrismaClient();
+    } catch (error) {
+      return NextResponse.json({
+        projects: [],
+        total: 0,
+        hasMore: false,
+      });
+    }
 
     try {
       const { searchParams } = new URL(request.url);
@@ -201,6 +215,7 @@ export async function GET(request: NextRequest) {
         orderBy = { votes: { _count: "desc" } };
       }
 
+      // @ts-ignore - Dynamic Prisma client
       const projects = await prisma.project.findMany({
         where,
         orderBy,
@@ -227,6 +242,7 @@ export async function GET(request: NextRequest) {
         }
       });
 
+      // @ts-ignore - Dynamic Prisma client
       const total = await prisma.project.count({ where });
 
       await prisma.$disconnect();

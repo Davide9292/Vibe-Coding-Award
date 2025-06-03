@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { createSafePrismaClient, isBuildTime } from "@/lib/prisma-safe";
 
 export async function GET() {
   try {
-    // Skip database operations during build time
-    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+    // Return early if we're in build time
+    if (isBuildTime()) {
       return NextResponse.json({ 
         error: "Database not available during build" 
       }, { status: 503 });
@@ -22,9 +23,14 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Dynamically import Prisma only when needed
-    const { PrismaClient } = await import("@prisma/client");
-    const prisma = new PrismaClient();
+    let prisma: any;
+    try {
+      prisma = await createSafePrismaClient();
+    } catch (error) {
+      return NextResponse.json({ 
+        error: "Database client not available" 
+      }, { status: 503 });
+    }
 
     try {
       // Get current month/year
@@ -33,6 +39,7 @@ export async function GET() {
       const currentYear = now.getFullYear();
 
       // Get submissions for current month
+      // @ts-ignore - Dynamic Prisma client
       const submissions = await prisma.project.findMany({
         where: {
           submissionMonth: currentMonth,

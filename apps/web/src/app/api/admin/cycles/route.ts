@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { createSafePrismaClient, isBuildTime } from "@/lib/prisma-safe";
 
 export async function POST() {
   try {
-    // Skip database operations during build time
-    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+    // Return early if we're in build time
+    if (isBuildTime()) {
       return NextResponse.json({ 
         error: "Database not available during build" 
       }, { status: 503 });
@@ -22,9 +23,14 @@ export async function POST() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Dynamically import Prisma only when needed
-    const { PrismaClient } = await import("@prisma/client");
-    const prisma = new PrismaClient();
+    let prisma: any;
+    try {
+      prisma = await createSafePrismaClient();
+    } catch (error) {
+      return NextResponse.json({ 
+        error: "Database client not available" 
+      }, { status: 503 });
+    }
 
     try {
       // Get current month/year
@@ -33,6 +39,7 @@ export async function POST() {
       const currentYear = now.getFullYear();
 
       // Check if cycle already exists
+      // @ts-ignore - Dynamic Prisma client
       const existingCycle = await prisma.awardCycle.findFirst({
         where: {
           month: currentMonth,
@@ -54,6 +61,7 @@ export async function POST() {
       const announcementDate = new Date(currentYear, currentMonth - 1, 30); // 30th of the month (or last day)
 
       // Create new award cycle
+      // @ts-ignore - Dynamic Prisma client
       const cycle = await prisma.awardCycle.create({
         data: {
           month: currentMonth,

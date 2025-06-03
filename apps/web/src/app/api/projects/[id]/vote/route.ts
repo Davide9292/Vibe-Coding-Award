@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { createSafePrismaClient, isBuildTime } from "@/lib/prisma-safe";
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    // Skip database operations during build time
-    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+    // Return early if we're in build time
+    if (isBuildTime()) {
       return NextResponse.json({ 
         error: "Database not available during build" 
       }, { status: 503 });
@@ -22,14 +23,20 @@ export async function POST(
       );
     }
 
-    // Dynamically import Prisma only when needed
-    const { PrismaClient } = await import("@prisma/client");
-    const prisma = new PrismaClient();
+    let prisma: any;
+    try {
+      prisma = await createSafePrismaClient();
+    } catch (error) {
+      return NextResponse.json({ 
+        error: "Database client not available" 
+      }, { status: 503 });
+    }
 
     try {
       const projectId = params.id;
 
       // Check if project exists
+      // @ts-ignore - Dynamic Prisma client
       const project = await prisma.project.findUnique({
         where: { id: projectId }
       });
@@ -48,6 +55,7 @@ export async function POST(
       const currentYear = now.getFullYear();
 
       // Check if user already voted for this project this month
+      // @ts-ignore - Dynamic Prisma client
       const existingVote = await prisma.vote.findUnique({
         where: {
           userId_projectId_month_year: {
@@ -68,6 +76,7 @@ export async function POST(
       }
 
       // Create the vote
+      // @ts-ignore - Dynamic Prisma client
       const vote = await prisma.vote.create({
         data: {
           userId: session.user.id,
@@ -78,6 +87,7 @@ export async function POST(
       });
 
       // Get updated vote count
+      // @ts-ignore - Dynamic Prisma client
       const voteCount = await prisma.vote.count({
         where: { projectId }
       });
@@ -108,8 +118,8 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Skip database operations during build time
-    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+    // Return early if we're in build time
+    if (isBuildTime()) {
       return NextResponse.json({ 
         error: "Database not available during build" 
       }, { status: 503 });
@@ -124,9 +134,14 @@ export async function DELETE(
       );
     }
 
-    // Dynamically import Prisma only when needed
-    const { PrismaClient } = await import("@prisma/client");
-    const prisma = new PrismaClient();
+    let prisma: any;
+    try {
+      prisma = await createSafePrismaClient();
+    } catch (error) {
+      return NextResponse.json({ 
+        error: "Database client not available" 
+      }, { status: 503 });
+    }
 
     try {
       const projectId = params.id;
@@ -137,6 +152,7 @@ export async function DELETE(
       const currentYear = now.getFullYear();
 
       // Find and delete the vote
+      // @ts-ignore - Dynamic Prisma client
       const deletedVote = await prisma.vote.deleteMany({
         where: {
           userId: session.user.id,
@@ -155,6 +171,7 @@ export async function DELETE(
       }
 
       // Get updated vote count
+      // @ts-ignore - Dynamic Prisma client
       const voteCount = await prisma.vote.count({
         where: { projectId }
       });

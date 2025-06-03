@@ -23,7 +23,7 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    let prisma;
+    let prisma: any;
     try {
       prisma = await createSafePrismaClient();
     } catch (error) {
@@ -39,6 +39,7 @@ export async function GET() {
       const currentYear = now.getFullYear();
 
       // Find current award cycle
+      // @ts-ignore - Dynamic Prisma client
       const cycle = await prisma.awardCycle.findFirst({
         where: {
           month: currentMonth,
