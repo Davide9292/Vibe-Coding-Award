@@ -8,14 +8,19 @@ import { useEffect } from "react";
 import Navigation from "@/components/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Github } from "lucide-react";
-import { Chrome } from "lucide-react";
+import { Github, Chrome, AlertCircle } from "lucide-react";
+import Link from "next/link";
 
 export default function SignInPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+
+  // Check if OAuth is configured (these will be undefined if not set)
+  const hasGoogleAuth = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const hasGitHubAuth = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
+  const isOAuthConfigured = hasGoogleAuth || hasGitHubAuth;
 
   useEffect(() => {
     if (session) {
@@ -50,23 +55,43 @@ export default function SignInPage() {
             </CardHeader>
             
             <CardContent className="space-y-4">
+              {!isOAuthConfigured && (
+                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium text-yellow-800">OAuth Not Configured</h4>
+                      <p className="text-sm text-yellow-700 mt-1">
+                        To enable sign-in, you need to set up OAuth providers. 
+                        Check the <Link href="/debug-auth" className="underline">debug page</Link> or 
+                        see AUTHENTICATION_SETUP.md for instructions.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-3">
                 <Button
                   onClick={() => signIn("google", { callbackUrl })}
                   variant="outline"
                   className="w-full flex items-center justify-center gap-2 h-12"
+                  disabled={!hasGoogleAuth}
                 >
                   <Chrome className="w-5 h-5" />
                   Sign in with Google
+                  {!hasGoogleAuth && <span className="text-xs text-gray-500">(Not configured)</span>}
                 </Button>
                 
                 <Button
                   onClick={() => signIn("github", { callbackUrl })}
                   variant="outline"
                   className="w-full flex items-center justify-center gap-2 h-12"
+                  disabled={!hasGitHubAuth}
                 >
                   <Github className="w-5 h-5" />
                   Sign in with GitHub
+                  {!hasGitHubAuth && <span className="text-xs text-gray-500">(Not configured)</span>}
                 </Button>
               </div>
               
@@ -93,6 +118,15 @@ export default function SignInPage() {
               </a>
             </p>
           </div>
+
+          {/* Development helper */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mt-4 text-center">
+              <Link href="/debug-auth" className="text-sm text-gray-500 hover:text-blue-600">
+                🔧 Debug Authentication
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </div>
