@@ -1,0 +1,7 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && pnpm build --filter=@repo/web",
+  "outputDirectory": ".next",
+  "installCommand": "cd ../.. && pnpm install",
+  "nodeVersion": "18.x"
+} 
