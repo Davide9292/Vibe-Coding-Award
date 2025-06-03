@@ -3,6 +3,10 @@ import { auth } from "@/lib/auth";
 import { sendSubmissionConfirmation } from "@/lib/email";
 import { createSafePrismaClient, isBuildTime } from "@/lib/prisma-safe";
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(request: NextRequest) {
   try {
     // Return early if we're in build time
