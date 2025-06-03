@@ -1,0 +1,422 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User management
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  username      String?   @unique
+  bio           String?
+  avatar        String?
+  website       String?
+  github        String?
+  twitter       String?
+  linkedin      String?
+  role          UserRole  @default(USER)
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  accounts    Account[]
+  sessions    Session[]
+  projects    Project[]
+  votes       Vote[]
+  judgeScores JudgeScore[]
+  comments    Comment[]
+  
+  // Newsletter subscription
+  newsletterSubscribed Boolean @default(false)
+  
+  // Notification preferences
+  emailNotifications Boolean @default(true)
+  
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// Project submissions
+model Project {
+  id          String        @id @default(cuid())
+  title       String
+  description String        @db.Text
+  
+  // Project showcase
+  demoUrl     String?
+  videoUrl    String?
+  downloadUrl String?
+  repoUrl     String?
+  
+  // Vibe narrative
+  vibeNarrative String      @db.Text
+  
+  // AI tools used
+  aiTools     String[]
+  
+  // Code authorship breakdown
+  aiGeneratedPercent    Int @default(0)
+  aiRefactoredPercent   Int @default(0)
+  humanWrittenPercent   Int @default(0)
+  
+  // Learning and challenges
+  learnings   String?       @db.Text
+  challenges  String?       @db.Text
+  
+  // Media files
+  screenshots String[]
+  media       ProjectMedia[]
+  
+  // Metadata
+  tags        String[]
+  category    ProjectCategory?
+  
+  // Status and workflow
+  status      ProjectStatus @default(DRAFT)
+  
+  // Submission period
+  submissionMonth Int
+  submissionYear  Int
+  
+  // Results
+  isWinner           Boolean @default(false)
+  isPeoplesChoice    Boolean @default(false)
+  isStandout         Boolean @default(false)
+  winnerType         WinnerType?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  submittedAt DateTime?
+  
+  // Relations
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  votes       Vote[]
+  judgeScores JudgeScore[]
+  comments    Comment[]
+  teamMembers TeamMember[]
+
+  @@map("projects")
+}
+
+model ProjectMedia {
+  id        String      @id @default(cuid())
+  projectId String
+  type      MediaType
+  url       String
+  caption   String?
+  order     Int         @default(0)
+  createdAt DateTime    @default(now())
+  
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_media")
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  projectId String
+  name      String
+  role      String?
+  email     String?
+  github    String?
+  
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("team_members")
+}
+
+// Voting system
+model Vote {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String
+  month     Int
+  year      Int
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId, month, year])
+  @@map("votes")
+}
+
+// Judging system
+model JudgeScore {
+  id        String   @id @default(cuid())
+  userId    String   // Judge
+  projectId String
+  
+  // Scoring criteria (out of 100)
+  vibeProcessScore    Int // 40% weight
+  originalityScore    Int // 25% weight
+  executionScore      Int // 20% weight
+  wowFactorScore      Int // 15% weight
+  
+  // Total calculated score
+  totalScore          Float
+  
+  // Comments and feedback
+  comments            String? @db.Text
+  feedback            String? @db.Text
+  
+  // Conflict of interest
+  hasConflict         Boolean @default(false)
+  conflictReason      String?
+  
+  // Status
+  isComplete          Boolean @default(false)
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project             Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+  @@map("judge_scores")
+}
+
+// Content management
+model Post {
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  content     String      @db.Text
+  excerpt     String?
+  coverImage  String?
+  published   Boolean     @default(false)
+  featured    Boolean     @default(false)
+  
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  
+  // Categories and tags
+  category    String?
+  tags        String[]
+  
+  // Author (admin user)
+  authorId    String
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  publishedAt DateTime?
+  
+  // Relations
+  comments    Comment[]
+
+  @@map("posts")
+}
+
+model Comment {
+  id        String      @id @default(cuid())
+  content   String      @db.Text
+  approved  Boolean     @default(false)
+  
+  // Relations
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Polymorphic relations
+  projectId String?
+  project   Project?    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  postId    String?
+  post      Post?       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  // Reply system
+  parentId  String?
+  parent    Comment?    @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[]   @relation("CommentReplies")
+  
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@map("comments")
+}
+
+// Newsletter and communications
+model NewsletterSubscriber {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String?
+  subscribed  Boolean  @default(true)
+  source      String?  // Where they subscribed from
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("newsletter_subscribers")
+}
+
+model EmailTemplate {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  subject     String
+  content     String   @db.Text
+  type        EmailType
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("email_templates")
+}
+
+// Analytics and tracking
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+  event      String
+  properties Json?
+  userId     String?
+  sessionId  String?
+  createdAt  DateTime @default(now())
+
+  @@map("analytics_events")
+}
+
+// Award cycles and periods
+model AwardCycle {
+  id              String   @id @default(cuid())
+  month           Int
+  year            Int
+  
+  // Important dates
+  submissionStart DateTime
+  submissionEnd   DateTime
+  votingStart     DateTime
+  votingEnd       DateTime
+  judgingStart    DateTime
+  judgingEnd      DateTime
+  announcementDate DateTime
+  
+  // Status
+  status          CycleStatus @default(UPCOMING)
+  
+  // Results
+  winnerId        String?
+  peoplesChoiceId String?
+  standoutIds     String[]
+  
+  // Theme or special focus (optional)
+  theme           String?
+  description     String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([month, year])
+  @@map("award_cycles")
+}
+
+// Enums
+enum UserRole {
+  USER
+  JUDGE
+  ADMIN
+  MODERATOR
+}
+
+enum ProjectStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  SHORTLISTED
+  WINNER
+  NOT_SELECTED
+  WITHDRAWN
+}
+
+enum ProjectCategory {
+  WEB_APP
+  MOBILE_APP
+  DESKTOP_APP
+  GAME
+  TOOL_UTILITY
+  AI_ML
+  CREATIVE
+  EDUCATIONAL
+  OPEN_SOURCE
+  OTHER
+}
+
+enum WinnerType {
+  MONTHLY_WINNER
+  PEOPLES_CHOICE
+  STANDOUT
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+  LINK
+}
+
+enum EmailType {
+  WELCOME
+  SUBMISSION_CONFIRMATION
+  STATUS_UPDATE
+  WINNER_NOTIFICATION
+  NEWSLETTER
+  REMINDER
+}
+
+enum CycleStatus {
+  UPCOMING
+  SUBMISSION_OPEN
+  SUBMISSION_CLOSED
+  VOTING_OPEN
+  VOTING_CLOSED
+  JUDGING_OPEN
+  JUDGING_CLOSED
+  COMPLETED
+} 
