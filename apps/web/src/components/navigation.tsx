@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Menu, X } from "lucide-react";
 
-export default function Navigation() {
+function Navigation() {
   const { data: session, status } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -101,12 +101,12 @@ export default function Navigation() {
                 >
                   Submit Project
                 </Link>
-                <button
-                  onClick={() => signIn()}
+                <Link
+                  href="/auth/signin"
                   className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
                 >
                   Sign In
-                </button>
+                </Link>
               </div>
             )}
           </div>
@@ -207,15 +207,13 @@ export default function Navigation() {
                   >
                     Submit Project
                   </Link>
-                  <button
-                    onClick={() => {
-                      signIn();
-                      setIsMenuOpen(false);
-                    }}
+                  <Link
+                    href="/auth/signin"
                     className="block w-full text-gray-700 hover:text-blue-600 transition-colors font-medium text-left"
+                    onClick={() => setIsMenuOpen(false)}
                   >
                     Sign In
-                  </button>
+                  </Link>
                 </div>
               )}
             </div>
@@ -224,4 +222,7 @@ export default function Navigation() {
       </div>
     </nav>
   );
-} 
+}
+
+export default Navigation;
+export { Navigation }; 

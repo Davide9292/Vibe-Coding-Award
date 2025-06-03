@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Navigation from "@/components/navigation";
+import { useSession, signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus, Upload, Link as LinkIcon, Github, ExternalLink } from "lucide-react";
+import { X, Plus, Upload, Link as LinkIcon, Github, ExternalLink, Chrome } from "lucide-react";
 
 const PROJECT_CATEGORIES = [
   "WEB_APP",
@@ -74,7 +75,9 @@ interface FormData {
 }
 
 export default function SubmitProjectPage() {
+  const { data: session, status } = useSession();
   const [currentStep, setCurrentStep] = useState(1);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
@@ -168,6 +171,12 @@ export default function SubmitProjectPage() {
   };
 
   const handleSubmit = async () => {
+    // Check if user is authenticated
+    if (!session) {
+      setShowAuthPrompt(true);
+      return;
+    }
+
     try {
       const response = await fetch("/api/projects", {
         method: "POST",
@@ -201,6 +210,7 @@ export default function SubmitProjectPage() {
           teamMembers: []
         });
         setCurrentStep(1);
+        setShowAuthPrompt(false);
       } else {
         const error = await response.json();
         alert(`Submission failed: ${error.error}`);
@@ -519,6 +529,47 @@ export default function SubmitProjectPage() {
     }
   };
 
+  // Authentication prompt component
+  const AuthPrompt = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Sign In to Submit</CardTitle>
+          <CardDescription>
+            You need to sign in to submit your project. Don't worry, your form data will be saved!
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Button
+            onClick={() => signIn("google", { callbackUrl: "/submit" })}
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2"
+          >
+            <Chrome className="w-4 h-4" />
+            Sign in with Google
+          </Button>
+          
+          <Button
+            onClick={() => signIn("github", { callbackUrl: "/submit" })}
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2"
+          >
+            <Github className="w-4 h-4" />
+            Sign in with GitHub
+          </Button>
+          
+          <Button
+            onClick={() => setShowAuthPrompt(false)}
+            variant="ghost"
+            className="w-full"
+          >
+            Cancel
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       <Navigation />
@@ -589,6 +640,8 @@ export default function SubmitProjectPage() {
           </Card>
         </div>
       </div>
+
+      {showAuthPrompt && <AuthPrompt />}
     </div>
   );
 } 
