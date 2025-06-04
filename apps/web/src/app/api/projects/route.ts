@@ -5,37 +5,48 @@ import { createSafePrismaClient, isBuildTime } from "@/lib/prisma-safe";
 
 // Force dynamic rendering for this API route
 export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log("=== Project submission started ===");
+    
     // Return early if we're in build time
     if (isBuildTime()) {
+      console.log("Build time detected, returning early");
       return NextResponse.json({ 
         error: "Database not available during build" 
       }, { status: 503 });
     }
 
+    console.log("Checking authentication...");
     const session = await auth();
     
     if (!session?.user?.id) {
+      console.log("No session found");
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
       );
     }
 
+    console.log("Session found:", session.user.id);
+
+    console.log("Creating Prisma client...");
     let prisma: any;
     try {
       prisma = await createSafePrismaClient();
+      console.log("Prisma client created successfully");
     } catch (error) {
+      console.error("Prisma client creation failed:", error);
       return NextResponse.json({ 
         error: "Database client not available" 
       }, { status: 503 });
     }
 
     try {
+      console.log("Parsing request body...");
       const body = await request.json();
+      console.log("Request body parsed, keys:", Object.keys(body));
       
       // Validate required fields
       const {
@@ -58,7 +69,9 @@ export async function POST(request: NextRequest) {
         teamMembers = []
       } = body;
 
+      console.log("Validating required fields...");
       if (!title || !description || !vibeNarrative) {
+        console.log("Missing required fields:", { title: !!title, description: !!description, vibeNarrative: !!vibeNarrative });
         await prisma.$disconnect();
         return NextResponse.json(
           { error: "Title, description, and vibe narrative are required" },
@@ -66,6 +79,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      console.log("Checking if user exists in database...");
       // Check if user exists in database, create if not
       // @ts-ignore
       let user = await prisma.user.findUnique({
@@ -83,8 +97,12 @@ export async function POST(request: NextRequest) {
             image: session.user.image || null,
           }
         });
+        console.log("User created successfully");
+      } else {
+        console.log("User already exists in database");
       }
 
+      console.log("Preparing project data...");
       // Get current month and year for submission
       const now = new Date();
       const submissionMonth = now.getMonth() + 1;
@@ -96,6 +114,7 @@ export async function POST(request: NextRequest) {
         allAiTools.push(customAiTool);
       }
 
+      console.log("Creating project...");
       // Create project with team members
       // @ts-ignore - Dynamic Prisma client
       const project = await prisma.project.create({
@@ -142,7 +161,10 @@ export async function POST(request: NextRequest) {
         }
       });
 
-      // Send confirmation email
+      console.log("Project created successfully:", project.id);
+
+      console.log("Sending confirmation email...");
+      // Send confirmation email (but don't fail submission if this fails)
       if (session.user.email) {
         try {
           await sendSubmissionConfirmation(
@@ -150,13 +172,19 @@ export async function POST(request: NextRequest) {
             session.user.name || session.user.email,
             title
           );
-        } catch (emailError) {
+          console.log("Confirmation email sent successfully");
+        } catch (emailError: any) {
           console.error("Failed to send confirmation email:", emailError);
-          // Don't fail the submission if email fails
+          // Don't fail the submission if email fails - just log it
+          console.log("Continuing with submission despite email failure");
         }
+      } else {
+        console.log("No email address, skipping confirmation email");
       }
 
       await prisma.$disconnect();
+      console.log("=== Project submission completed successfully ===");
+      
       return NextResponse.json({
         success: true,
         project: {
@@ -169,14 +197,18 @@ export async function POST(request: NextRequest) {
       });
 
     } catch (dbError) {
+      console.error("Database error:", dbError);
       await prisma.$disconnect();
       throw dbError;
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Project submission error:", error);
     return NextResponse.json(
-      { error: "Failed to submit project" },
+      { 
+        error: "Failed to submit project",
+        details: process.env.NODE_ENV === 'development' ? error?.message : undefined
+      },
       { status: 500 }
     );
   }
