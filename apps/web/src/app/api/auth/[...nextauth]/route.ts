@@ -1,4 +1,4 @@
-// Temporarily using JWT-only auth to test OAuth without database adapter
-import { handlers } from "@/lib/auth-jwt";
+// Using database-backed authentication with Prisma adapter
+import { handlers } from "@/lib/auth";
 
 export const { GET, POST } = handlers; 

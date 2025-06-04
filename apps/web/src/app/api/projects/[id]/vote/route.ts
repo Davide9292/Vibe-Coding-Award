@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { createSafePrismaClient, isBuildTime } from "@/lib/prisma-safe";
+import { prisma } from "@repo/database";
 
 // Force dynamic rendering for this API route
 export const dynamic = 'force-dynamic';
@@ -11,13 +11,6 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Return early if we're in build time
-    if (isBuildTime()) {
-      return NextResponse.json({ 
-        error: "Database not available during build" 
-      }, { status: 503 });
-    }
-
     const session = await auth();
     
     if (!session?.user?.id) {
@@ -27,91 +20,90 @@ export async function POST(
       );
     }
 
-    let prisma: any;
-    try {
-      prisma = await createSafePrismaClient();
-    } catch (error) {
-      return NextResponse.json({ 
-        error: "Database client not available" 
-      }, { status: 503 });
+    const projectId = params.id;
+
+    // Check if project exists and is votable
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: {
+        id: true,
+        submissionMonth: true,
+        submissionYear: true,
+        status: true,
+        userId: true,
+      },
+    });
+
+    if (!project) {
+      return NextResponse.json(
+        { error: "Project not found" },
+        { status: 404 }
+      );
     }
 
-    try {
-      const projectId = params.id;
+    // Check if project is in votable status
+    if (project.status !== 'SUBMITTED') {
+      return NextResponse.json(
+        { error: "Project is not available for voting" },
+        { status: 400 }
+      );
+    }
 
-      // Check if project exists
-      // @ts-ignore - Dynamic Prisma client
-      const project = await prisma.project.findUnique({
-        where: { id: projectId }
-      });
+    // Users cannot vote for their own projects
+    if (project.userId === session.user.id) {
+      return NextResponse.json(
+        { error: "You cannot vote for your own project" },
+        { status: 400 }
+      );
+    }
 
-      if (!project) {
-        await prisma.$disconnect();
-        return NextResponse.json(
-          { error: "Project not found" },
-          { status: 404 }
-        );
-      }
-
-      // Get current month and year
-      const now = new Date();
-      const currentMonth = now.getMonth() + 1;
-      const currentYear = now.getFullYear();
-
-      // Check if user already voted for this project this month
-      // @ts-ignore - Dynamic Prisma client
-      const existingVote = await prisma.vote.findUnique({
-        where: {
-          userId_projectId_month_year: {
-            userId: session.user.id,
-            projectId,
-            month: currentMonth,
-            year: currentYear,
-          }
-        }
-      });
-
-      if (existingVote) {
-        await prisma.$disconnect();
-        return NextResponse.json(
-          { error: "You have already voted for this project this month" },
-          { status: 400 }
-        );
-      }
-
-      // Create the vote
-      // @ts-ignore - Dynamic Prisma client
-      const vote = await prisma.vote.create({
-        data: {
+    // Check if user has already voted for this project in this cycle
+    const existingVote = await prisma.vote.findUnique({
+      where: {
+        userId_projectId_month_year: {
           userId: session.user.id,
-          projectId,
-          month: currentMonth,
-          year: currentYear,
-        }
-      });
+          projectId: projectId,
+          month: project.submissionMonth,
+          year: project.submissionYear,
+        },
+      },
+    });
 
-      // Get updated vote count
-      // @ts-ignore - Dynamic Prisma client
-      const voteCount = await prisma.vote.count({
-        where: { projectId }
-      });
-
-      await prisma.$disconnect();
-      return NextResponse.json({
-        success: true,
-        voteCount,
-        message: "Vote recorded successfully"
-      });
-
-    } catch (dbError) {
-      await prisma.$disconnect();
-      throw dbError;
+    if (existingVote) {
+      return NextResponse.json(
+        { error: "You have already voted for this project" },
+        { status: 400 }
+      );
     }
 
+    // Create the vote
+    const vote = await prisma.vote.create({
+      data: {
+        userId: session.user.id,
+        projectId: projectId,
+        month: project.submissionMonth,
+        year: project.submissionYear,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      vote: vote,
+      message: "Vote recorded successfully",
+    });
   } catch (error) {
-    console.error("Voting error:", error);
+    console.error("Error recording vote:", error);
     return NextResponse.json(
-      { error: "Failed to record vote" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -122,13 +114,6 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Return early if we're in build time
-    if (isBuildTime()) {
-      return NextResponse.json({ 
-        error: "Database not available during build" 
-      }, { status: 503 });
-    }
-
     const session = await auth();
     
     if (!session?.user?.id) {
@@ -138,59 +123,40 @@ export async function DELETE(
       );
     }
 
-    let prisma: any;
-    try {
-      prisma = await createSafePrismaClient();
-    } catch (error) {
-      return NextResponse.json({ 
-        error: "Database client not available" 
-      }, { status: 503 });
-    }
+    const projectId = params.id;
 
-    try {
-      const projectId = params.id;
+    // Get current month and year
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1;
+    const currentYear = now.getFullYear();
 
-      // Get current month and year
-      const now = new Date();
-      const currentMonth = now.getMonth() + 1;
-      const currentYear = now.getFullYear();
-
-      // Find and delete the vote
-      // @ts-ignore - Dynamic Prisma client
-      const deletedVote = await prisma.vote.deleteMany({
-        where: {
-          userId: session.user.id,
-          projectId,
-          month: currentMonth,
-          year: currentYear,
-        }
-      });
-
-      if (deletedVote.count === 0) {
-        await prisma.$disconnect();
-        return NextResponse.json(
-          { error: "Vote not found" },
-          { status: 404 }
-        );
+    // Find and delete the vote
+    const deletedVote = await prisma.vote.deleteMany({
+      where: {
+        userId: session.user.id,
+        projectId,
+        month: currentMonth,
+        year: currentYear,
       }
+    });
 
-      // Get updated vote count
-      // @ts-ignore - Dynamic Prisma client
-      const voteCount = await prisma.vote.count({
-        where: { projectId }
-      });
-
-      await prisma.$disconnect();
-      return NextResponse.json({
-        success: true,
-        voteCount,
-        message: "Vote removed successfully"
-      });
-
-    } catch (dbError) {
-      await prisma.$disconnect();
-      throw dbError;
+    if (deletedVote.count === 0) {
+      return NextResponse.json(
+        { error: "Vote not found" },
+        { status: 404 }
+      );
     }
+
+    // Get updated vote count
+    const voteCount = await prisma.vote.count({
+      where: { projectId }
+    });
+
+    return NextResponse.json({
+      success: true,
+      voteCount,
+      message: "Vote removed successfully"
+    });
 
   } catch (error) {
     console.error("Vote removal error:", error);

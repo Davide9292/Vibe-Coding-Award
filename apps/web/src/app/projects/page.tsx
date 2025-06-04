@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, ExternalLink, Github, Calendar, Users, Zap } from "lucide-react";
+import { Search, ExternalLink, Github, Calendar, Users, Zap, Eye } from "lucide-react";
 import Link from "next/link";
 
 // Mock data for demonstration
@@ -240,6 +240,12 @@ export default function ProjectsPage() {
                     {/* Action Buttons */}
                     <div className="flex gap-2 pt-2">
                       <Button variant="vibe" size="sm" className="flex-1" asChild>
+                        <Link href={`/projects/${project.id}`}>
+                          <Eye className="h-4 w-4 mr-1" />
+                          Explore Project
+                        </Link>
+                      </Button>
+                      <Button variant="outline" size="sm" asChild>
                         <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="h-4 w-4 mr-1" />
                           Demo
