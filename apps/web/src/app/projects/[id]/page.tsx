@@ -881,7 +881,7 @@ export default function ProjectDetailPage() {
                     
                     {session?.user?.id === project.user.id && (
                       <Button variant="outline" className="w-full" asChild>
-                        <Link href={`/projects/${project.id}/edit`}>
+                        <Link href={`/projects/${project.id}/edit` as any}>
                           Edit Project
                         </Link>
                       </Button>
