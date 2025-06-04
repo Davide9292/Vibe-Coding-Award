@@ -57,9 +57,12 @@ export async function GET(request: NextRequest) {
           email: true,
           createdAt: true,
           bio: true,
-          location: true,
+          avatar: true,
+          image: true,
           website: true,
           github: true,
+          twitter: true,
+          linkedin: true,
         }
       });
 
@@ -82,9 +85,12 @@ export async function GET(request: NextRequest) {
               email: true,
               createdAt: true,
               bio: true,
-              location: true,
+              avatar: true,
+              image: true,
               website: true,
               github: true,
+              twitter: true,
+              linkedin: true,
             }
           });
           console.log("User created successfully:", user.id);
@@ -176,9 +182,12 @@ export async function GET(request: NextRequest) {
           email: user.email,
           joinedAt: user.createdAt,
           bio: user.bio,
-          location: user.location,
+          avatar: user.avatar,
+          image: user.image,
           website: user.website,
           github: user.github,
+          twitter: user.twitter,
+          linkedin: user.linkedin,
         },
         stats: {
           projectsSubmitted: projects.length,
