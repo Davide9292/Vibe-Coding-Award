@@ -218,10 +218,19 @@ export async function GET(request: NextRequest) {
 
   } catch (error: any) {
     console.error("Dashboard data fetch error:", error);
+    console.error("Error message:", error?.message);
+    console.error("Error stack:", error?.stack);
+    console.error("Error name:", error?.name);
     return NextResponse.json(
       { 
         error: "Failed to fetch dashboard data",
-        details: process.env.NODE_ENV === 'development' ? error?.message : undefined
+        message: error?.message,
+        name: error?.name,
+        details: process.env.NODE_ENV === 'development' ? {
+          message: error?.message,
+          stack: error?.stack,
+          name: error?.name
+        } : undefined
       },
       { status: 500 }
     );
