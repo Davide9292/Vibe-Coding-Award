@@ -1,8 +1,6 @@
 import NextAuth, { type DefaultSession } from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
-import { prisma } from "@repo/database";
 
 declare module "next-auth" {
   interface Session {
@@ -15,7 +13,7 @@ declare module "next-auth" {
 }
 
 const authConfig = NextAuth({
-  adapter: PrismaAdapter(prisma) as any,
+  // No adapter - JWT only for testing
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -37,25 +35,13 @@ const authConfig = NextAuth({
     session: async ({ session, token }) => {
       if (session?.user && token?.sub) {
         session.user.id = token.sub;
-        
-        // Get user role from database
-        try {
-          const user = await prisma.user.findUnique({
-            where: { id: token.sub },
-            select: { role: true, username: true },
-          });
-          
-          if (user) {
-            session.user.role = user.role;
-            session.user.username = user.username;
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
+        // For JWT-only, we'll set default values
+        session.user.role = "USER";
+        session.user.username = session.user.email?.split('@')[0] || null;
       }
       return session;
     },
-    jwt: async ({ user, token }) => {
+    jwt: async ({ user, token, account, profile }) => {
       if (user) {
         token.uid = user.id;
       }
