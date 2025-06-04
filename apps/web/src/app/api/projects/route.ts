@@ -66,6 +66,25 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      // Check if user exists in database, create if not
+      // @ts-ignore
+      let user = await prisma.user.findUnique({
+        where: { id: session.user.id }
+      });
+      
+      if (!user) {
+        console.log("Creating user in database:", session.user.id);
+        // @ts-ignore
+        user = await prisma.user.create({
+          data: {
+            id: session.user.id,
+            email: session.user.email || '',
+            name: session.user.name || null,
+            image: session.user.image || null,
+          }
+        });
+      }
+
       // Get current month and year for submission
       const now = new Date();
       const submissionMonth = now.getMonth() + 1;

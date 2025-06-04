@@ -62,6 +62,39 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
+    // Check if user exists in database
+    console.log("DEBUG: Checking if user exists in database...");
+    try {
+      // @ts-ignore
+      let user = await prisma.user.findUnique({
+        where: { id: session.user.id }
+      });
+      
+      if (!user) {
+        console.log("DEBUG: User not found in database, creating user...");
+        // @ts-ignore
+        user = await prisma.user.create({
+          data: {
+            id: session.user.id,
+            email: session.user.email || '',
+            name: session.user.name || null,
+            image: session.user.image || null,
+          }
+        });
+        console.log("DEBUG: User created successfully:", user.id);
+      } else {
+        console.log("DEBUG: User found in database:", user.id);
+      }
+    } catch (userError: any) {
+      console.log("DEBUG: User check/creation failed:", userError);
+      await prisma.$disconnect();
+      return NextResponse.json({
+        error: "User validation failed",
+        step: "user_validation",
+        details: userError?.message || String(userError)
+      }, { status: 500 });
+    }
+
     // Test parsing request body
     console.log("DEBUG: Parsing request body...");
     let body;
