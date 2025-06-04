@@ -1,8 +1,6 @@
 import NextAuth, { type DefaultSession } from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
-import { prisma } from "@repo/database";
 
 declare module "next-auth" {
   interface Session {
@@ -15,7 +13,6 @@ declare module "next-auth" {
 }
 
 const authConfig = NextAuth({
-  adapter: PrismaAdapter(prisma) as any,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -37,21 +34,9 @@ const authConfig = NextAuth({
     session: async ({ session, token }) => {
       if (session?.user && token?.sub) {
         session.user.id = token.sub;
-        
-        // Get user role from database
-        try {
-          const user = await prisma.user.findUnique({
-            where: { id: token.sub },
-            select: { role: true, username: true },
-          });
-          
-          if (user) {
-            session.user.role = user.role;
-            session.user.username = user.username;
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.image = token.picture as string;
       }
       return session;
     },

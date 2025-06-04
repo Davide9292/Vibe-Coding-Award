@@ -18,6 +18,7 @@ model User {
   username      String?   @unique
   bio           String?
   avatar        String?
+  image         String?   // For NextAuth OAuth providers
   website       String?
   github        String?
   twitter       String?
