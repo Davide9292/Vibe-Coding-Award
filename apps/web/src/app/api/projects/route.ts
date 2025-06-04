@@ -163,25 +163,6 @@ export async function POST(request: NextRequest) {
 
       console.log("Project created successfully:", project.id);
 
-      console.log("Sending confirmation email...");
-      // Send confirmation email (but don't fail submission if this fails)
-      if (session.user.email) {
-        try {
-          await sendSubmissionConfirmation(
-            session.user.email,
-            session.user.name || session.user.email,
-            title
-          );
-          console.log("Confirmation email sent successfully");
-        } catch (emailError: any) {
-          console.error("Failed to send confirmation email:", emailError);
-          // Don't fail the submission if email fails - just log it
-          console.log("Continuing with submission despite email failure");
-        }
-      } else {
-        console.log("No email address, skipping confirmation email");
-      }
-
       await prisma.$disconnect();
       console.log("=== Project submission completed successfully ===");
       
