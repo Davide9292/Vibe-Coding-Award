@@ -6,32 +6,46 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
+    console.log("=== Dashboard API called ===");
+    
     // Return early if we're in build time
     if (isBuildTime()) {
+      console.log("Build time detected, returning 503");
       return NextResponse.json({ 
         error: "Database not available during build" 
       }, { status: 503 });
     }
 
+    console.log("Getting session...");
     const session = await auth();
+    console.log("Session:", session ? { 
+      userId: session.user?.id, 
+      email: session.user?.email,
+      name: session.user?.name 
+    } : "No session");
     
     if (!session?.user?.id) {
+      console.log("No valid session found");
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
       );
     }
 
+    console.log("Creating Prisma client...");
     let prisma: any;
     try {
       prisma = await createSafePrismaClient();
+      console.log("Prisma client created successfully");
     } catch (error) {
+      console.error("Failed to create Prisma client:", error);
       return NextResponse.json({ 
         error: "Database client not available" 
       }, { status: 503 });
     }
 
     try {
+      console.log("Looking for user in database:", session.user.id);
       // Fetch user data
       // @ts-ignore
       let user = await prisma.user.findUnique({
@@ -51,30 +65,38 @@ export async function GET(request: NextRequest) {
 
       // If user doesn't exist, create them from session data
       if (!user) {
-        console.log("Creating new user from session:", session.user.id);
-        // @ts-ignore
-        user = await prisma.user.create({
-          data: {
-            id: session.user.id,
-            email: session.user.email || '',
-            name: session.user.name || null,
-            image: session.user.image || null,
-          },
-          select: {
-            id: true,
-            name: true,
-            username: true,
-            email: true,
-            createdAt: true,
-            bio: true,
-            location: true,
-            website: true,
-            github: true,
-          }
-        });
-        console.log("User created successfully");
+        console.log("User not found, creating new user from session:", session.user.id);
+        try {
+          // @ts-ignore
+          user = await prisma.user.create({
+            data: {
+              id: session.user.id,
+              email: session.user.email || '',
+              name: session.user.name || null,
+              image: session.user.image || null,
+            },
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              email: true,
+              createdAt: true,
+              bio: true,
+              location: true,
+              website: true,
+              github: true,
+            }
+          });
+          console.log("User created successfully:", user.id);
+        } catch (createError) {
+          console.error("Failed to create user:", createError);
+          throw createError;
+        }
+      } else {
+        console.log("User found in database:", user.id);
       }
 
+      console.log("Fetching user projects...");
       // Fetch user's projects
       // @ts-ignore
       const projects = await prisma.project.findMany({
@@ -99,7 +121,9 @@ export async function GET(request: NextRequest) {
         },
         orderBy: { createdAt: 'desc' }
       });
+      console.log("Found projects:", projects.length);
 
+      console.log("Fetching user votes...");
       // Fetch user's voting history
       // @ts-ignore
       const votes = await prisma.vote.findMany({
@@ -124,15 +148,27 @@ export async function GET(request: NextRequest) {
         orderBy: { createdAt: 'desc' },
         take: 20
       });
+      console.log("Found votes:", votes.length);
 
+      console.log("Calculating user stats...");
       // Calculate stats
       const totalVotes = projects.reduce((sum: number, project: any) => sum + project._count.votes, 0);
       const monthlyWins = projects.filter((p: any) => p.isWinner).length;
       const peoplesChoiceWins = projects.filter((p: any) => p.isPeoplesChoice).length;
       const standoutProjects = projects.filter((p: any) => p.isStandout).length;
 
-      await prisma.$disconnect();
+      console.log("Stats calculated:", { 
+        projectsSubmitted: projects.length, 
+        totalVotes, 
+        monthlyWins, 
+        peoplesChoiceWins, 
+        standoutProjects 
+      });
 
+      await prisma.$disconnect();
+      console.log("Database disconnected");
+
+      console.log("Returning dashboard data successfully");
       return NextResponse.json({
         profile: {
           name: user.name,
@@ -175,6 +211,7 @@ export async function GET(request: NextRequest) {
       });
 
     } catch (dbError) {
+      console.error("Database operation error:", dbError);
       await prisma.$disconnect();
       throw dbError;
     }
