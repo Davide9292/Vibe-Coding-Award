@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     try {
       // Fetch user data
       // @ts-ignore
-      const user = await prisma.user.findUnique({
+      let user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: {
           id: true,
@@ -49,12 +49,30 @@ export async function GET(request: NextRequest) {
         }
       });
 
+      // If user doesn't exist, create them from session data
       if (!user) {
-        await prisma.$disconnect();
-        return NextResponse.json(
-          { error: "User not found" },
-          { status: 404 }
-        );
+        console.log("Creating new user from session:", session.user.id);
+        // @ts-ignore
+        user = await prisma.user.create({
+          data: {
+            id: session.user.id,
+            email: session.user.email || '',
+            name: session.user.name || null,
+            image: session.user.image || null,
+          },
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            email: true,
+            createdAt: true,
+            bio: true,
+            location: true,
+            website: true,
+            github: true,
+          }
+        });
+        console.log("User created successfully");
       }
 
       // Fetch user's projects
