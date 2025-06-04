@@ -10,55 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, ExternalLink, Github, Calendar, Users, Zap, Eye } from "lucide-react";
 import Link from "next/link";
 
-// Mock data for demonstration
-const mockProjects = [
-  {
-    id: "1",
-    title: "AI-Powered Code Review Assistant",
-    description: "A VS Code extension that uses GPT-4 to provide intelligent code reviews and suggestions in real-time.",
-    category: "TOOL_UTILITY",
-    tags: ["VS Code", "GPT-4", "Code Review", "Developer Tools"],
-    author: "Sarah Chen",
-    submissionDate: "2024-01-15",
-    demoUrl: "https://marketplace.visualstudio.com/items?itemName=ai-code-review",
-    repoUrl: "https://github.com/sarahchen/ai-code-review",
-    aiTools: ["GPT-4", "GitHub Copilot"],
-    isWinner: false,
-    isPeoplesChoice: true,
-    votes: 127
-  },
-  {
-    id: "2", 
-    title: "VibeTunes - AI Music Composer",
-    description: "Create personalized music tracks using AI that adapts to your mood and preferences. Built with Claude and custom ML models.",
-    category: "CREATIVE",
-    tags: ["Music", "AI", "Machine Learning", "Web App"],
-    author: "Alex Rodriguez",
-    submissionDate: "2024-01-12",
-    demoUrl: "https://vibetunes.app",
-    repoUrl: "https://github.com/alexr/vibetunes",
-    aiTools: ["Claude", "Custom ML Models"],
-    isWinner: true,
-    isPeoplesChoice: false,
-    votes: 89
-  },
-  {
-    id: "3",
-    title: "Smart Recipe Generator",
-    description: "Input your available ingredients and dietary preferences, and AI will generate custom recipes with step-by-step instructions.",
-    category: "WEB_APP",
-    tags: ["Food", "Recipe", "AI", "React"],
-    author: "Maria Santos",
-    submissionDate: "2024-01-10",
-    demoUrl: "https://smart-recipes.vercel.app",
-    repoUrl: "https://github.com/mariasantos/smart-recipes",
-    aiTools: ["ChatGPT", "Cursor"],
-    isWinner: false,
-    isPeoplesChoice: false,
-    votes: 64
-  }
-];
-
 const categories = [
   "All Categories",
   "WEB_APP",
@@ -73,32 +24,72 @@ const categories = [
   "OTHER"
 ];
 
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  tags: string[];
+  author: string;
+  submissionDate: string;
+  demoUrl?: string;
+  repoUrl?: string;
+  aiTools: string[];
+  isWinner: boolean;
+  isPeoplesChoice: boolean;
+  votes: number;
+}
+
 export default function ProjectsPage() {
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [selectedCategory, setSelectedCategory] = React.useState("All Categories");
-  const [sortBy, setSortBy] = React.useState("newest");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [sortBy, setSortBy] = useState("newest");
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredProjects = mockProjects.filter(project => {
-    const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesCategory = selectedCategory === "All Categories" || project.category === selectedCategory;
-    
-    return matchesSearch && matchesCategory;
-  });
+  useEffect(() => {
+    fetchProjects();
+  }, [selectedCategory, sortBy]);
 
-  const sortedProjects = [...filteredProjects].sort((a, b) => {
-    switch (sortBy) {
-      case "newest":
-        return new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime();
-      case "oldest":
-        return new Date(a.submissionDate).getTime() - new Date(b.submissionDate).getTime();
-      case "popular":
-        return b.votes - a.votes;
-      default:
-        return 0;
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      
+      if (selectedCategory !== "All Categories") {
+        params.append("category", selectedCategory);
+      }
+      if (sortBy) {
+        params.append("sortBy", sortBy);
+      }
+      
+      const response = await fetch(`/api/projects?${params.toString()}`);
+      
+      if (!response.ok) {
+        throw new Error("Failed to fetch projects");
+      }
+      
+      const data = await response.json();
+      setProjects(data.projects || []);
+    } catch (err) {
+      console.error("Error fetching projects:", err);
+      setError("Failed to load projects");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const filteredProjects = projects.filter(project => {
+    if (!searchTerm) return true;
+    
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      project.title.toLowerCase().includes(searchLower) ||
+      project.description.toLowerCase().includes(searchLower) ||
+      project.tags.some(tag => tag.toLowerCase().includes(searchLower)) ||
+      project.author.toLowerCase().includes(searchLower)
+    );
   });
 
   return (
@@ -160,118 +151,146 @@ export default function ProjectsPage() {
           {/* Results Count */}
           <div className="mb-6">
             <p className="text-gray-600">
-              Showing {sortedProjects.length} of {mockProjects.length} projects
+              {loading ? "Loading..." : `Showing ${filteredProjects.length} projects`}
             </p>
           </div>
 
+          {/* Loading State */}
+          {loading && (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-8 h-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="text-center py-12">
+              <p className="text-red-600 mb-4">{error}</p>
+              <Button onClick={fetchProjects}>Try Again</Button>
+            </div>
+          )}
+
           {/* Projects Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedProjects.map(project => (
-              <Card key={project.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg mb-2 line-clamp-2">
-                        {project.title}
-                      </CardTitle>
-                      <CardDescription className="line-clamp-3">
-                        {project.description}
-                      </CardDescription>
-                    </div>
-                    <div className="flex flex-col gap-1 ml-2">
-                      {project.isWinner && (
-                        <Badge variant="default" className="bg-yellow-500 text-white">
-                          🏆 Winner
-                        </Badge>
-                      )}
-                      {project.isPeoplesChoice && (
-                        <Badge variant="secondary" className="bg-purple-500 text-white">
-                          ❤️ People's Choice
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="space-y-4">
-                    {/* Category & Tags */}
-                    <div>
-                      <Badge variant="outline" className="mb-2">
-                        {project.category.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}
-                      </Badge>
-                      <div className="flex flex-wrap gap-1">
-                        {project.tags.slice(0, 3).map(tag => (
-                          <Badge key={tag} variant="secondary" className="text-xs">
-                            {tag}
+          {!loading && !error && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProjects.map(project => (
+                <Card key={project.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg mb-2 line-clamp-2">
+                          {project.title}
+                        </CardTitle>
+                        <CardDescription className="line-clamp-3">
+                          {project.description}
+                        </CardDescription>
+                      </div>
+                      <div className="flex flex-col gap-1 ml-2">
+                        {project.isWinner && (
+                          <Badge variant="default" className="bg-yellow-500 text-white">
+                            🏆 Winner
                           </Badge>
-                        ))}
-                        {project.tags.length > 3 && (
-                          <Badge variant="secondary" className="text-xs">
-                            +{project.tags.length - 3}
+                        )}
+                        {project.isPeoplesChoice && (
+                          <Badge variant="secondary" className="bg-purple-500 text-white">
+                            ❤️ People's Choice
                           </Badge>
                         )}
                       </div>
                     </div>
-
-                    {/* AI Tools */}
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Zap className="h-4 w-4" />
-                      <span>AI Tools: {project.aiTools.join(", ")}</span>
-                    </div>
-
-                    {/* Author & Date */}
-                    <div className="flex items-center justify-between text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        <span>{project.author}</span>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="space-y-4">
+                      {/* Category & Tags */}
+                      <div>
+                        {project.category && (
+                          <Badge variant="outline" className="mb-2">
+                            {project.category.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}
+                          </Badge>
+                        )}
+                        <div className="flex flex-wrap gap-1">
+                          {project.tags.slice(0, 3).map(tag => (
+                            <Badge key={tag} variant="secondary" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                          {project.tags.length > 3 && (
+                            <Badge variant="secondary" className="text-xs">
+                              +{project.tags.length - 3}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        <span>{new Date(project.submissionDate).toLocaleDateString()}</span>
+
+                      {/* AI Tools */}
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Zap className="h-4 w-4" />
+                        <span>AI Tools: {project.aiTools.join(", ")}</span>
+                      </div>
+
+                      {/* Author & Date */}
+                      <div className="flex items-center justify-between text-sm text-gray-600">
+                        <div className="flex items-center gap-1">
+                          <Users className="h-4 w-4" />
+                          <span>{project.author}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          <span>{new Date(project.submissionDate).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+
+                      {/* Votes */}
+                      <div className="text-sm text-gray-600">
+                        ❤️ {project.votes} votes
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-2 pt-2">
+                        <Button variant="vibe" size="sm" className="flex-1" asChild>
+                          <Link href={`/projects/${project.id}`}>
+                            <Eye className="h-4 w-4 mr-1" />
+                            Explore Project
+                          </Link>
+                        </Button>
+                        {project.demoUrl && (
+                          <Button variant="outline" size="sm" asChild>
+                            <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="h-4 w-4 mr-1" />
+                              Demo
+                            </a>
+                          </Button>
+                        )}
+                        {project.repoUrl && (
+                          <Button variant="outline" size="sm" asChild>
+                            <a href={project.repoUrl} target="_blank" rel="noopener noreferrer">
+                              <Github className="h-4 w-4" />
+                            </a>
+                          </Button>
+                        )}
                       </div>
                     </div>
-
-                    {/* Votes */}
-                    <div className="text-sm text-gray-600">
-                      ❤️ {project.votes} votes
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 pt-2">
-                      <Button variant="vibe" size="sm" className="flex-1" asChild>
-                        <Link href={`/projects/${project.id}`}>
-                          <Eye className="h-4 w-4 mr-1" />
-                          Explore Project
-                        </Link>
-                      </Button>
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-4 w-4 mr-1" />
-                          Demo
-                        </a>
-                      </Button>
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={project.repoUrl} target="_blank" rel="noopener noreferrer">
-                          <Github className="h-4 w-4" />
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
 
           {/* Empty State */}
-          {sortedProjects.length === 0 && (
+          {!loading && !error && filteredProjects.length === 0 && (
             <div className="text-center py-12">
               <div className="text-gray-400 mb-4">
                 <Search className="h-16 w-16 mx-auto" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No projects found</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {projects.length === 0 ? "No projects submitted yet" : "No projects found"}
+              </h3>
               <p className="text-gray-600 mb-6">
-                Try adjusting your search terms or filters to find what you're looking for.
+                {projects.length === 0 
+                  ? "Be the first to submit your project and showcase your human-AI collaboration!"
+                  : "Try adjusting your search terms or filters to find what you're looking for."
+                }
               </p>
               <Button variant="vibe" asChild>
                 <Link href="/submit">Submit Your Project</Link>
