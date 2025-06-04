@@ -1,15 +1,25 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
 import Navigation from "@/components/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Github, Chrome, AlertCircle } from "lucide-react";
 import Link from "next/link";
+
+interface AuthConfig {
+  oauth: {
+    google: boolean;
+    github: boolean;
+  };
+  config: {
+    nextAuthUrl: boolean;
+    nextAuthSecret: boolean;
+  };
+}
 
 export default function SignInPage() {
   const { data: session, status } = useSession();
@@ -17,10 +27,27 @@ export default function SignInPage() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
 
-  // Check if OAuth is configured (these will be undefined if not set)
-  const hasGoogleAuth = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-  const hasGitHubAuth = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
-  const isOAuthConfigured = hasGoogleAuth || hasGitHubAuth;
+  const [authConfig, setAuthConfig] = useState<AuthConfig | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch OAuth configuration from server
+  useEffect(() => {
+    const fetchAuthConfig = async () => {
+      try {
+        const response = await fetch('/api/auth-config');
+        if (response.ok) {
+          const config = await response.json();
+          setAuthConfig(config);
+        }
+      } catch (err) {
+        console.error('Failed to fetch auth config:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAuthConfig();
+  }, []);
 
   useEffect(() => {
     if (session) {
@@ -28,7 +55,7 @@ export default function SignInPage() {
     }
   }, [session, router, callbackUrl]);
 
-  if (status === "loading") {
+  if (status === "loading" || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="w-8 h-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
@@ -39,6 +66,10 @@ export default function SignInPage() {
   if (session) {
     return null; // Will redirect via useEffect
   }
+
+  const hasGoogleAuth = authConfig?.oauth.google || false;
+  const hasGitHubAuth = authConfig?.oauth.github || false;
+  const isOAuthConfigured = hasGoogleAuth || hasGitHubAuth;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
