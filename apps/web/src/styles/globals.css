@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap');
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -92,13 +90,15 @@
   }
   
   .mono-title {
-    font-family: 'Rubik Mono One', 'Courier New', monospace;
+    font-family: 'Rubik Mono One', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
     font-weight: 400;
+    font-style: normal;
     font-feature-settings: "kern" 1;
     letter-spacing: -0.02em;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-display: swap;
   }
   
   /* Ensure title stays on one line on larger screens */
@@ -243,4 +243,11 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure font loads properly */
+@supports (font-family: 'Rubik Mono One') {
+  .mono-title {
+    font-family: 'Rubik Mono One', monospace;
+  }
 } 
