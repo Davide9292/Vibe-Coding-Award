@@ -1,18 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, Rubik_Mono_One } from "next/font/google";
+import { Inter } from "next/font/google";
 import Script from "next/script";
 import "../styles/globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
-const playfair = Playfair_Display({ 
-  subsets: ["latin"],
-  variable: '--font-playfair'
-});
-const rubikMono = Rubik_Mono_One({ 
-  weight: '400',
-  subsets: ["latin"],
-  variable: '--font-rubik-mono'
-});
 
 export const metadata: Metadata = {
   title: "Vibe Coding Award - Coming Soon",
@@ -41,7 +32,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className={`${inter.className} ${playfair.variable} ${rubikMono.variable}`}>
+      <body className={inter.className}>
         {children}
       </body>
     </html>

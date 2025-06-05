@@ -87,7 +87,7 @@ export default function SplashPage() {
       {/* Hero Section */}
       <section className="min-h-[75vh] flex items-center justify-center px-4 md:px-8">
         <div className="text-center">
-          <h1 className="font-[var(--font-rubik-mono)] text-8xl sm:text-9xl md:text-[8rem] lg:text-[12rem] xl:text-[14rem] font-normal leading-[0.8] tracking-tight wavy-text">
+          <h1 className="mono-title text-8xl sm:text-9xl md:text-[8rem] lg:text-[12rem] xl:text-[14rem] font-normal leading-[0.8] tracking-tight wavy-text">
             Vibe Coding Award
           </h1>
         </div>
@@ -130,9 +130,6 @@ export default function SplashPage() {
           <div className="smooth-entrance pt-16">
             <div className="text-sm tracking-[0.4em] uppercase opacity-50 mb-6 font-light">
               Coming Soon
-            </div>
-            <div className="text-xs opacity-30 font-light tracking-widest">
-              2024
             </div>
           </div>
 
