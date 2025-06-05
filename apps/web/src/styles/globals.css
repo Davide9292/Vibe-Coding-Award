@@ -59,10 +59,45 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    line-height: 1.6;
+  }
+  
+  html {
+    scroll-behavior: smooth;
   }
 }
 
 @layer components {
+  /* Premium splash page styles */
+  .wavy-text {
+    filter: url(#wavy);
+    will-change: filter;
+  }
+  
+  .smooth-entrance {
+    transform: translateY(30px);
+    opacity: 0;
+    transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .smooth-entrance.visible {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  
+  .elegant-serif {
+    font-family: var(--font-playfair), serif;
+    font-feature-settings: "liga" 1, "kern" 1;
+    letter-spacing: -0.02em;
+    text-rendering: optimizeLegibility;
+  }
+  
+  .premium-text {
+    color: #333333;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+  
   .vibe-gradient {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   }
@@ -106,6 +141,49 @@
   .animate-glow {
     animation: glow 2s ease-in-out infinite;
   }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+}
+
+/* Keyframes for animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 /* Custom scrollbar */
@@ -128,10 +206,19 @@
 
 /* Selection styles */
 ::selection {
-  background-color: hsl(var(--primary) / 0.2);
+  background-color: rgba(51, 51, 51, 0.1);
+  color: #333333;
 }
 
 /* Focus styles */
 .focus-visible {
   @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+}
+
+/* Premium typography enhancements */
+.premium-typography {
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 } 
