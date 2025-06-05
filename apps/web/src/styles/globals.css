@@ -99,18 +99,30 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-display: swap;
+    line-height: 0.75;
+  }
+  
+  /* Mobile: force three lines and smaller spacing */
+  @media (max-width: 767px) {
+    .mono-title {
+      letter-spacing: -0.01em;
+      line-height: 0.8;
+      word-spacing: 0.5em;
+    }
   }
   
   /* Ensure title stays on one line on larger screens */
   @media (min-width: 768px) {
     .mono-title {
       letter-spacing: -0.03em;
+      line-height: 0.75;
     }
   }
   
   @media (min-width: 1024px) {
     .mono-title {
       letter-spacing: -0.04em;
+      line-height: 0.7;
     }
   }
   
@@ -228,8 +240,8 @@
 
 /* Selection styles */
 ::selection {
-  background-color: rgba(51, 51, 51, 0.1);
-  color: #333333;
+  background-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
 }
 
 /* Focus styles */
