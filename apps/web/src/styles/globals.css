@@ -92,6 +92,13 @@
     text-rendering: optimizeLegibility;
   }
   
+  .mono-title {
+    font-family: var(--font-rubik-mono), monospace;
+    font-feature-settings: "kern" 1;
+    letter-spacing: -0.01em;
+    text-rendering: optimizeLegibility;
+  }
+  
   .premium-text {
     color: #333333;
     font-weight: 300;
