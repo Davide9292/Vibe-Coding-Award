@@ -1,4 +1,4 @@
-export default function SplashPage() {
+export default function NotFound() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex flex-col items-center justify-center relative overflow-hidden">
       {/* Background Pattern */}
@@ -12,29 +12,28 @@ export default function SplashPage() {
       {/* Main Content */}
       <div className="text-center z-10 px-8">
         {/* Logo/Title */}
-        <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-white mb-8 tracking-tight">
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-8 tracking-tight">
           <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
             VIBE
           </span>
-          <br />
-          <span className="text-white">
-            CODING
-          </span>
-          <br />
+          <span className="text-white"> CODING </span>
           <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             AWARD
           </span>
         </h1>
 
-        {/* Subtitle */}
-        <div className="text-xl md:text-2xl text-white/80 mb-12 font-light">
-          Where AI meets creativity in code
+        {/* 404 Message */}
+        <div className="text-xl md:text-2xl text-white/80 mb-8 font-light">
+          Page not found
         </div>
 
-        {/* Animated Pulse */}
-        <div className="w-16 h-16 mx-auto mb-8">
-          <div className="w-full h-full rounded-full bg-gradient-to-r from-purple-400 to-blue-400 animate-pulse opacity-60"></div>
-        </div>
+        {/* Back to Home */}
+        <a 
+          href="/" 
+          className="inline-block px-8 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-full hover:from-purple-600 hover:to-blue-600 transition-all duration-200 font-medium"
+        >
+          Back to Home
+        </a>
       </div>
 
       {/* Coming Soon */}
@@ -42,15 +41,7 @@ export default function SplashPage() {
         <div className="text-white/60 text-sm md:text-base tracking-widest uppercase">
           Coming Soon
         </div>
-        <div className="text-white/40 text-xs mt-2">
-          The future of AI-powered coding competitions
-        </div>
       </div>
-
-      {/* Floating Animation */}
-      <div className="absolute top-1/4 left-10 w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-      <div className="absolute top-1/3 right-16 w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
-      <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '2s' }}></div>
     </div>
   );
 } 
