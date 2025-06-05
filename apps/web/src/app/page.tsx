@@ -87,7 +87,7 @@ export default function SplashPage() {
       {/* Hero Section */}
       <section className="min-h-[75vh] flex items-center justify-center px-4 md:px-8">
         <div className="text-center">
-          <h1 className="mono-title text-8xl sm:text-9xl md:text-[8rem] lg:text-[12rem] xl:text-[14rem] font-normal leading-[0.8] tracking-tight wavy-text">
+          <h1 className="mono-title text-6xl sm:text-7xl md:text-8xl lg:text-[7rem] xl:text-[8rem] 2xl:text-[9rem] font-normal leading-[0.8] tracking-tight wavy-text whitespace-nowrap">
             Vibe Coding Award
           </h1>
         </div>

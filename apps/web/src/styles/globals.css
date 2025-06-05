@@ -92,10 +92,26 @@
   }
   
   .mono-title {
-    font-family: 'Rubik Mono One', monospace;
+    font-family: 'Rubik Mono One', 'Courier New', monospace;
+    font-weight: 400;
     font-feature-settings: "kern" 1;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Ensure title stays on one line on larger screens */
+  @media (min-width: 768px) {
+    .mono-title {
+      letter-spacing: -0.03em;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .mono-title {
+      letter-spacing: -0.04em;
+    }
   }
   
   .premium-text {
