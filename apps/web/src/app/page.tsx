@@ -485,7 +485,8 @@ function ManifestoModal({ onClose }: { onClose: () => void }) {
                 </div>
               </section>
 
-              {/* Why This Matters */}
+              {/* Why This Matters - COMMENTED OUT */}
+              {/*
               <section>
                 <h2 className="text-xl md:text-2xl font-barlow-semibold text-black mb-4">
                   Why This Matters
@@ -494,8 +495,10 @@ function ManifestoModal({ onClose }: { onClose: () => void }) {
                   We believe the future belongs to those who can harmonize human intuition with artificial intelligence. This isn't about replacing human creativity—it's about supercharging it.
                 </p>
               </section>
+              */}
 
-              {/* Join the Movement */}
+              {/* Join the Movement - COMMENTED OUT */}
+              {/*
               <section>
                 <h2 className="text-xl md:text-2xl font-barlow-semibold text-black mb-4">
                   Join the Movement
@@ -507,8 +510,10 @@ function ManifestoModal({ onClose }: { onClose: () => void }) {
                   Whether you're building the next groundbreaking app, experimenting with AI-generated art, or creating tools that democratize creativity, we want to see your work, amplify your story, and connect you with like-minded innovators from around the world.
                 </p>
               </section>
+              */}
 
-              {/* About the Founder */}
+              {/* About the Founder - COMMENTED OUT */}
+              {/*
               <section>
                 <h2 className="text-xl md:text-2xl font-barlow-semibold text-black mb-4">
                   About the Founder
@@ -537,6 +542,7 @@ function ManifestoModal({ onClose }: { onClose: () => void }) {
                   Connect on LinkedIn
                 </a>
               </section>
+              */}
             </div>
           </div>
         </div>
