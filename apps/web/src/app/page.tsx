@@ -105,51 +105,87 @@ export default function HomePage() {
   return (
     <div className="bg-black text-white font-barlow min-h-screen">
       {/* Hero Section - White Container */}
-      <section className="md:px-8 pt-4 md:pt-8 flex items-center min-h-[600px]">
+      <section className="md:px-8 pt-4 md:pt-8">
         <div 
-          className={`bg-white rounded-[20px] p-4 md:p-8 w-full h-auto md:h-[600px] flex flex-col justify-center transition-opacity duration-1000 ${
+          className={`bg-white rounded-[20px] w-full h-[650px] relative transition-opacity duration-1000 ${
             isVisible.hero ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          {/* Logo Container - Centered */}
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
-            {/* Video Mark */}
-            <div className="flex-shrink-0">
-              <video
-                className="w-[240px] h-[262px] md:w-[320px] md:h-[350px] object-cover"
-                autoPlay
-                loop
-                muted
-                playsInline
-                aria-label="Vibe Coding Award animated logo mark"
-              >
-                <source src="/videos/logo-mark-loop.webm" type="video/webm" />
-                Your browser does not support the video tag.
-              </video>
-            </div>
-            
-            {/* SVG Logotype */}
-            <div className="flex-shrink-0">
-              <img
-                src="/logo-text.svg"
-                alt="Vibe Coding Award"
-                className="h-250 md:h-100 w-auto"
-              />
+          {/* Centered Logo Content */}
+          <div className="absolute inset-0 flex items-center justify-center p-4 mb-12 md:p-8">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
+              {/* Video Mark */}
+              <div className="flex-shrink-0">
+                <video
+                  className="w-[240px] h-[262px] md:w-[320px] md:h-[350px] object-cover border-1 border-white rounded-full"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  aria-label="Vibe Coding Award animated logo mark"
+                >
+                  <source src="/videos/logo-mark-loop.webm" type="video/webm" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              
+              {/* SVG Logotype */}
+              <div className="flex-shrink-0">
+                <img
+                  src="/logo-text.svg"
+                  alt="Vibe Coding Award"
+                  className="h-250 md:h-100px w-auto"
+                />
+              </div>
             </div>
           </div>
           
-          {/* Coming Soon */}
-          <div className="text-center mt-8 md:mt-12">
-            <p className="coming-soon text-black text-sm md:text-sm">
-              Coming Soon
-            </p>
+          {/* Coming Soon - Positioned at Bottom */}
+          <div className="absolute bottom-2 md:bottom-4 left-1/2 transform -translate-x-1/2 translate-y-1/2">
+            <div className="relative inline-flex items-center justify-center">
+              {/* Option 1: SVG Notch (when you upload the SVG) */}
+              <img
+                src="/coming-soon-notch.svg"
+                alt=""
+                className="w-auto h-8 md:h-10"
+                aria-hidden="true"
+                onError={(e) => {
+                  // Fallback to CSS version if SVG not found
+                  const img = e.currentTarget;
+                  const fallback = img.nextElementSibling as HTMLElement;
+                  img.style.display = 'none';
+                  if (fallback) {
+                    fallback.style.display = 'block';
+                  }
+                }}
+              />
+              
+              {/* Option 2: CSS Notch Fallback */}
+              <div 
+                className="hidden bg-black rounded-full px-6 py-2 md:px-8 md:py-3"
+                style={{ display: 'none' }}
+              >
+                <span className="text-white text-xs md:text-sm font-barlow-semibold tracking-widest uppercase">
+                  Coming Soon
+                </span>
+              </div>
+              
+              {/* Text Overlay (for SVG version) */}
+              <span className="absolute inset-0 flex items-center justify-center text-white text-sm md:text-xl font-barlow-semibold tracking-widest uppercase pointer-events-none">
+                Coming Soon
+              </span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Introduction Section - More Padding */}
+      {/* Introduction Section - Conditional Padding Based on Newsletter Flag */}
       <section 
-        className="md:px-8 py-20 md:py-40"
+        className={`md:px-8 transition-all duration-700 ${
+          isNewsletterEnabled 
+            ? 'py-20 md:py-40' 
+            : 'py-20 md:py-20'
+        }`}
         data-section="intro"
       >
         <div 
@@ -161,7 +197,11 @@ export default function HomePage() {
             Championing the Pioneers of the Next Creative Era.
           </h1>
           
-          <h2 className="text-lg md:text-xl lg:text-2xl font-light text-gray-300 mb-8 md:mb-16 leading-relaxed">
+          <h2 className={`text-lg md:text-xl lg:text-2xl font-light text-gray-300 leading-relaxed ${
+            isNewsletterEnabled 
+              ? 'mb-8 md:mb-16' 
+              : 'mb-8 md:mb-8'
+          }`}>
             The premier independent award for the innovators and artisans of human-AI collaboration.
           </h2>
         </div>
@@ -398,101 +438,101 @@ function ManifestoModal({ onClose }: { onClose: () => void }) {
         <div className="h-full overflow-y-auto p-6 md:p-8 lg:p-12">
           {/* Content */}
           <div>
-            <h1 className="section-title text-black mb-8 md:mb-4">
-              Our Manifesto
+            <h1 className="section-title text-black mb-6 md:mb-8">
+              Manifesto
             </h1>
             
-            <div className="space-y-12 md:space-y-12 text-black font-barlow">
+            <div className="space-y-8 md:space-y-10 text-black font-barlow">
               
               {/* Opening Statement */}
               <section>
-                <p className="text-2xl md:text-4xl lg:text-[36px] font-light">
+                <p className="text-2xl md:text-4xl font-light leading-relaxed">
                   We stand at the beginning of a creative revolution. The Vibe Coding Award is here to celebrate the curious and creative builders who are redefining what it means to create in the age of artificial intelligence.
                 </p>
               </section>
 
               {/* What is Vibe Coding */}
               <section>
-                <h2 className="text-2xl md:text-2xl font-barlow-semibold text-black mb-4">
+                <h2 className="text-xl md:text-2xl font-barlow-semibold text-black mb-4">
                   What is Vibe Coding?
                 </h2>
-                <p className="text-lg md:text-xl lg:text-2xl leading-relaxed mb-4">
+                <p className="text-base md:text-lg leading-relaxed mb-4">
                   Vibe coding isn't just a technique—it's a philosophy. It's the intuitive dialogue between human creativity and artificial intelligence, where developers guide AI through natural conversation and iterative collaboration to build extraordinary digital experiences.
                 </p>
-                <p className="text-lg md:text-xl lg:text-2xl leading-relaxed">
+                <p className="text-base md:text-lg leading-relaxed">
                   It's about feeling your way through a problem, trusting your instincts, and letting AI amplify your creative vision. It's the art of knowing when to lead, when to follow, and when to explore uncharted territories together.
                 </p>
               </section>
 
               {/* Projects That Inspire Us */}
               <section>
-                <h2 className="text-2xl md:text-2xl font-barlow-semibold text-black mb-4">
+                <h2 className="text-xl md:text-2xl font-barlow-semibold text-black mb-4">
                   Projects That Inspire Us
                 </h2>
-                <div className="space-y-4">
-                  <p className="text-lg md:text-xl lg:text-2xl leading-relaxed">
-                    🎨 Creative Applications: Tools that empower artists, designers, and creators to push boundaries.
+                <div className="space-y-3">
+                  <p className="text-base md:text-lg leading-relaxed">
+                    🎨 <span className="font-medium">Creative Applications:</span> Tools that empower artists, designers, and creators to push boundaries.
                   </p>
-                  <p className="text-lg md:text-xl lg:text-2xl leading-relaxed">
-                    🚀 Experimental Interfaces: Projects that reimagine how we interact with technology through AI-powered experiences.
+                  <p className="text-base md:text-lg leading-relaxed">
+                    🚀 <span className="font-medium">Experimental Interfaces:</span> Projects that reimagine how we interact with technology through AI-powered experiences.
                   </p>
-                  <p className="text-lg md:text-xl lg:text-2xl leading-relaxed">
-                    🧠 Intelligent Workflows: Solutions that seamlessly blend human expertise with AI capabilities to solve real problems.
+                  <p className="text-base md:text-lg leading-relaxed">
+                    🧠 <span className="font-medium">Intelligent Workflows:</span> Solutions that seamlessly blend human expertise with AI capabilities to solve real problems.
                   </p>
-                  <p className="text-lg md:text-xl lg:text-2xl leading-relaxed">
-                    🌟 Breakthrough Concepts: Ideas that make us say, "I never thought that was possible"—the kind that can reshape entire industries.
+                  <p className="text-base md:text-lg leading-relaxed">
+                    🌟 <span className="font-medium">Breakthrough Concepts:</span> Ideas that make us say, "I never thought that was possible"—the kind that can reshape entire industries.
                   </p>
                 </div>
               </section>
 
               {/* Why This Matters */}
               <section>
-                <h2 className="text-2xl md:text-2xl font-barlow-semibold text-black mb-4">
+                <h2 className="text-xl md:text-2xl font-barlow-semibold text-black mb-4">
                   Why This Matters
                 </h2>
-                <p className="text-lg md:text-xl lg:text-2xl leading-relaxed">
+                <p className="text-base md:text-lg leading-relaxed">
                   We believe the future belongs to those who can harmonize human intuition with artificial intelligence. This isn't about replacing human creativity—it's about supercharging it.
                 </p>
               </section>
 
               {/* Join the Movement */}
               <section>
-                <h2 className="text-2xl md:text-2xl font-barlow-semibold text-black mb-4">
+                <h2 className="text-xl md:text-2xl font-barlow-semibold text-black mb-4">
                   Join the Movement
                 </h2>
-                <p className="text-lg md:text-xl lg:text-2xl leading-relaxed mb-4">
+                <p className="text-base md:text-lg leading-relaxed mb-4">
                   The Vibe Coding Award is more than just recognition—it's an open invitation to join a community of pioneers. This is a place for mutual support and learning, where developers, artists, entrepreneurs, and dreamers can share their breakthroughs and inspire the next generation of creators.
                 </p>
-                <p className="text-lg md:text-xl lg:text-2xl leading-relaxed">
+                <p className="text-base md:text-lg leading-relaxed">
                   Whether you're building the next groundbreaking app, experimenting with AI-generated art, or creating tools that democratize creativity, we want to see your work, amplify your story, and connect you with like-minded innovators from around the world.
                 </p>
               </section>
 
               {/* About the Founder */}
               <section>
-                <h2 className="text-2xl md:text-2xl font-barlow-semibold text-black mb-4">
+                <h2 className="text-xl md:text-2xl font-barlow-semibold text-black mb-4">
                   About the Founder
                 </h2>
-                <p className="text-lg md:text-xl lg:text-2xl text-black leading-relaxed mb-4">
+                <p className="text-base md:text-lg text-black leading-relaxed mb-4">
                   My journey with AI began long before it was a daily headline. In 2017, for my Master's graduation in Design, I wrote my thesis on the creative potential of human-AI interaction. I was fascinated by how these systems could become partners in our creative process.
                 </p>
-                <p className="text-lg md:text-xl lg:text-2xl text-black leading-relaxed mb-4">
+                <p className="text-base md:text-lg text-black leading-relaxed mb-4">
                   In the years since, I've been experimenting with the exact methods we now call "vibe coding"—using intuition and conversation to build with AI, long before Andrej Karpathy gave this wonderful practice a name.
                 </p>
-                <p className="text-lg md:text-xl lg:text-2xl text-black leading-relaxed mb-4">
+                <p className="text-base md:text-lg text-black leading-relaxed mb-4">
                   I created the Vibe Coding Award for a simple reason: I know there are countless people like me around the world, true pioneers who are quietly building incredible things but don't have a place to shine. This platform isn't just about celebrating the best projects; it's about finding and connecting the people behind them.
                 </p>
-                <p className="text-lg md:text-xl lg:text-2xl text-black leading-relaxed mb-6">
+                <p className="text-base md:text-lg text-black leading-relaxed mb-6">
                   This is my invitation to you. Let's build this community together!
                 </p>
-                <p className="text-lg md:text-xl lg:text-2xl text-black leading-relaxed font-medium mb-6">
-                  Davide
+                <p className="text-base md:text-lg text-black leading-relaxed font-medium mb-6">
+                Davide
                 </p>
                 <a 
                   href="https://www.linkedin.com/in/davide-pedone/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-secondary-white inline-block py-2"
+                  className="btn-secondary-white py-2 inline-block"
                 >
                   Connect on LinkedIn
                 </a>
