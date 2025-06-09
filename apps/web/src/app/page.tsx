@@ -127,14 +127,14 @@ export default function HomePage() {
                   <source src="/videos/logo-mark-loop.webm" type="video/webm" />
                   Your browser does not support the video tag.
                 </video>
-              </div>
+        </div>
               
               {/* SVG Logotype */}
               <div className="flex-shrink-0">
                 <img
                   src="/logo-text.svg"
                   alt="Vibe Coding Award"
-                  className="h-250 md:h-100px w-auto"
+                  className="h-[200px] md:h-[100px] w-auto"
                 />
               </div>
             </div>
@@ -753,7 +753,7 @@ function ProjectSubmissionModal({ onClose }: { onClose: () => void }) {
               ×
             </button>
           </div>
-          
+
           {/* Progress Bar */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
@@ -771,7 +771,7 @@ function ProjectSubmissionModal({ onClose }: { onClose: () => void }) {
               />
             </div>
           </div>
-          
+
           {/* Form Content */}
           <div className="mb-6">
             {renderStep()}
