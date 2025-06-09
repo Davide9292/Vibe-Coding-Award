@@ -107,17 +107,17 @@ export default function HomePage() {
       {/* Hero Section - White Container */}
       <section className="md:px-8 pt-4 md:pt-8">
         <div 
-          className={`bg-white rounded-[20px] w-full h-[650px] relative transition-opacity duration-1000 ${
+          className={`bg-white rounded-[20px] w-full h-[620px] relative transition-opacity duration-1000 ${
             isVisible.hero ? 'opacity-100' : 'opacity-0'
           }`}
         >
           {/* Centered Logo Content */}
-          <div className="absolute inset-0 flex items-center justify-center p-4 mb-12 md:p-8">
+          <div className="absolute inset-0 flex items-center justify-center p-4 pb-4 mb-4 md:p-8">
             <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
               {/* Video Mark */}
               <div className="flex-shrink-0">
                 <video
-                  className="w-[240px] h-[262px] md:w-[320px] md:h-[350px] object-cover border-1 border-white rounded-full"
+                  className="w-[240px] h-[262px] md:w-[320px] md:h-[350px] object-cover border-1 border-white"
                   autoPlay
                   loop
                   muted
@@ -134,7 +134,7 @@ export default function HomePage() {
                 <img
                   src="/logo-text.svg"
                   alt="Vibe Coding Award"
-                  className="h-[200px] md:h-[100px] w-auto"
+                  className="h-[210px] md:h-[250px] w-auto"
                 />
               </div>
             </div>
