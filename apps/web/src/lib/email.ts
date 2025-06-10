@@ -17,7 +17,7 @@ export async function sendEmail({ to, subject, html, from }: EmailOptions) {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     const result = await resend.emails.send({
-      from: from || process.env.FROM_EMAIL || "Vibe Coding Award <hello@vibecodingaward.com>",
+      from: from || process.env.FROM_EMAIL || "noreply@vibecodingaward.com",
       to,
       subject,
       html,
@@ -30,90 +30,228 @@ export async function sendEmail({ to, subject, html, from }: EmailOptions) {
   }
 }
 
-// Newsletter welcome template - Modern design matching production site
-export const newsletterWelcomeTemplate = (logoUrl: string) => ({
-  subject: "Welcome to the Vibe Coding Award Inner Circle! 🚀",
-  html: `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-      <!-- Header with logo on white background -->
-      <div style="background-color: #ffffff; padding: 40px 20px; text-align: center; border-bottom: 1px solid #e5e7eb;">
-        <img src="${logoUrl}" alt="Vibe Coding Award" style="height: 80px; width: auto; margin-bottom: 20px;" />
-        <h1 style="color: #111827; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.025em;">
-          Welcome to the Inner Circle!
-        </h1>
-        <p style="color: #6b7280; font-size: 18px; margin: 10px 0 0 0; font-weight: 400;">
-          You're now part of something special
-        </p>
-      </div>
-      
-      <!-- Main content -->
-      <div style="padding: 40px 20px; background-color: #ffffff;">
-        <div style="background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #e5e7eb;">
-          <p style="font-size: 18px; line-height: 1.6; margin: 0 0 20px 0; color: #374151;">
-            Thank you for joining the <strong>Vibe Coding Award</strong> community! 🚀
-          </p>
-          <p style="line-height: 1.6; margin: 0; color: #6b7280; font-size: 16px;">
-            You're now part of a movement celebrating the most creative and innovative builders who are redefining what it means to create with AI.
-          </p>
-        </div>
+// Email Templates
+export const emailTemplates = {
+  submissionConfirmation: (projectTitle: string, userName: string) => ({
+    subject: `Submission Confirmed: ${projectTitle}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; color: #000000;">
+        <h2 style="color: #2563eb; background-color: transparent;">Thank you for your submission!</h2>
+        <p style="color: #000000;">Hi ${userName},</p>
+        <p style="color: #000000;">We've received your submission for <strong>${projectTitle}</strong> to the Vibe Coding Award.</p>
         
-        <!-- What's next section -->
-        <div style="margin: 30px 0;">
-          <h2 style="color: #111827; font-size: 24px; font-weight: 600; margin: 0 0 20px 0;">What's Next?</h2>
-          <div style="background-color: #f9fafb; padding: 25px; border-radius: 8px; border-left: 4px solid #8b5cf6;">
-            <div style="margin-bottom: 15px;">
-              <div style="display: inline-block; width: 20px; height: 20px; background-color: #8b5cf6; border-radius: 50%; text-align: center; margin-right: 10px;">
-                <span style="color: white; font-size: 12px; line-height: 20px;">🏆</span>
-              </div>
-              <span style="color: #374151; font-weight: 500;">Monthly winner announcements and celebrations</span>
-            </div>
-            <div style="margin-bottom: 15px;">
-              <div style="display: inline-block; width: 20px; height: 20px; background-color: #8b5cf6; border-radius: 50%; text-align: center; margin-right: 10px;">
-                <span style="color: white; font-size: 12px; line-height: 20px;">✨</span>
-              </div>
-              <span style="color: #374151; font-weight: 500;">Featured project showcases and insights</span>
-            </div>
-            <div style="margin-bottom: 15px;">
-              <div style="display: inline-block; width: 20px; height: 20px; background-color: #8b5cf6; border-radius: 50%; text-align: center; margin-right: 10px;">
-                <span style="color: white; font-size: 12px; line-height: 20px;">🤝</span>
-              </div>
-              <span style="color: #374151; font-weight: 500;">Exclusive community updates and networking</span>
-            </div>
-            <div>
-              <div style="display: inline-block; width: 20px; height: 20px; background-color: #8b5cf6; border-radius: 50%; text-align: center; margin-right: 10px;">
-                <span style="color: white; font-size: 12px; line-height: 20px;">🚀</span>
-              </div>
-              <span style="color: #374151; font-weight: 500;">Early access to platform features and events</span>
-            </div>
-          </div>
+        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0; color: #000000;">
+          <h3 style="margin-top: 0; color: #000000;">What happens next?</h3>
+          <ul style="margin: 10px 0; color: #000000;">
+            <li>Your project is now in the review queue</li>
+            <li>Our judging panel will evaluate submissions</li>
+            <li>Community voting opens during the judging period</li>
+            <li>Winners are announced at the end of the month</li>
+          </ul>
         </div>
+
+        <p style="color: #000000;">You can track your submission and view the current leaderboard in your <a href="${process.env.NEXTAUTH_URL}/dashboard" style="color: #2563eb; text-decoration: none;">dashboard</a>.</p>
         
-        <!-- CTA Button -->
-        <div style="text-align: center; margin: 40px 0;">
-          <a href="https://vibecodingaward.com" 
-             style="display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-            Visit Vibe Coding Award
-          </a>
-        </div>
+        <p style="color: #000000;">Good luck!</p>
+        <p style="color: #000000;">The Vibe Coding Award Team</p>
         
         <!-- Footer -->
-        <div style="border-top: 1px solid #e5e7eb; padding-top: 30px; margin-top: 40px; text-align: center;">
-          <p style="color: #9ca3af; font-size: 14px; margin: 0 0 10px 0;">
+        <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 30px; text-align: center;">
+          <p style="color: #6b7280; font-size: 12px; margin: 0 0 10px 0;">
+            <a href="https://www.linkedin.com/company/vibe-coding-award/" style="color: #2563eb; text-decoration: none;">Follow us on LinkedIn</a> | 
+            <a href="mailto:hello@vibecodingaward.com" style="color: #2563eb; text-decoration: none;">hello@vibecodingaward.com</a>
+          </p>
+          <p style="color: #6b7280; font-size: 12px; margin: 0;">
+            © 2025 Vibe Coding Award
+          </p>
+        </div>
+      </div>
+    `
+  }),
+
+  winnerNotification: (projectTitle: string, userName: string, awardType: string, month: string) => ({
+    subject: `🎉 Congratulations! You've won the ${awardType}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; color: #000000;">
+        <h1 style="color: #2563eb; text-align: center; background-color: transparent;">🎉 Congratulations!</h1>
+        <p style="color: #000000;">Hi ${userName},</p>
+        <p style="color: #000000;">We're thrilled to announce that your project <strong>${projectTitle}</strong> has won the <strong>${awardType}</strong> for ${month}!</p>
+        
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; padding: 30px; border-radius: 12px; margin: 20px 0; text-align: center;">
+          <h2 style="margin: 0 0 10px 0; color: #ffffff;">${awardType}</h2>
+          <h3 style="margin: 0; font-weight: normal; color: #ffffff;">${projectTitle}</h3>
+        </div>
+
+        <h3 style="color: #000000;">Your achievements:</h3>
+        <ul style="color: #000000;">
+          <li>Featured on the Vibe Coding Award homepage</li>
+          <li>Permanent entry in the Winners Archive</li>
+          <li>Digital winner badge and certificate</li>
+          <li>Promotion across our social media channels</li>
+        </ul>
+
+        <p style="color: #000000;">Your project will be featured prominently on our <a href="${process.env.NEXTAUTH_URL}" style="color: #2563eb; text-decoration: none;">homepage</a> and in our monthly newsletter.</p>
+        
+        <p style="color: #000000;">Thank you for being part of the vibe coding community!</p>
+        <p style="color: #000000;">The Vibe Coding Award Team</p>
+        
+        <!-- Footer -->
+        <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 30px; text-align: center;">
+          <p style="color: #6b7280; font-size: 12px; margin: 0 0 10px 0;">
+            <a href="https://www.linkedin.com/company/vibe-coding-award/" style="color: #2563eb; text-decoration: none;">Follow us on LinkedIn</a> | 
+            <a href="mailto:hello@vibecodingaward.com" style="color: #2563eb; text-decoration: none;">hello@vibecodingaward.com</a>
+          </p>
+          <p style="color: #6b7280; font-size: 12px; margin: 0;">
+            © 2025 Vibe Coding Award
+          </p>
+        </div>
+      </div>
+    `
+  }),
+
+  newsletterWelcome: (logoUrl: string) => ({
+    subject: "Welcome to the Vibe Coding Award Inner Circle! 🚀",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; color: #000000;">
+        <!-- Header with logo on white background -->
+        <div style="background-color: #ffffff; padding: 40px 20px; text-align: center; border-bottom: 1px solid #e5e7eb;">
+          <img src="${logoUrl}" alt="Vibe Coding Award" style="height: 80px; width: auto; margin-bottom: 20px;" />
+          <h1 style="color: #111827; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.025em;">
+            Welcome to the Inner Circle!
+          </h1>
+          <p style="color: #6b7280; font-size: 18px; margin: 10px 0 0 0; font-weight: 400;">
+            You're now part of something special
+          </p>
+        </div>
+        
+        <!-- Main content -->
+        <div style="padding: 40px 20px; background-color: #ffffff;">
+          <div style="background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #e5e7eb;">
+            <p style="font-size: 18px; line-height: 1.6; margin: 0 0 20px 0; color: #374151;">
+              Thank you for joining the <strong>Vibe Coding Award</strong> community! 🚀
+            </p>
+            <p style="line-height: 1.6; margin: 0; color: #6b7280; font-size: 16px;">
+              You're now part of a movement celebrating the most creative and innovative builders who are redefining what it means to create with AI.
+            </p>
+          </div>
+          
+          <!-- What's next section -->
+          <div style="margin: 30px 0;">
+            <h2 style="color: #111827; font-size: 24px; font-weight: 600; margin: 0 0 20px 0;">What's Next?</h2>
+            <div style="background-color: #f9fafb; padding: 25px; border-radius: 8px; border-left: 4px solid #8b5cf6;">
+              <div style="margin-bottom: 15px;">
+                <span style="color: #374151; font-weight: 500;">🏆 Monthly winner announcements and celebrations</span>
+              </div>
+              <div style="margin-bottom: 15px;">
+                <span style="color: #374151; font-weight: 500;">✨ Featured project showcases and insights</span>
+              </div>
+              <div style="margin-bottom: 15px;">
+                <span style="color: #374151; font-weight: 500;">🤝 Exclusive community updates and networking</span>
+              </div>
+              <div>
+                <span style="color: #374151; font-weight: 500;">🚀 Early access to platform features and events</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CTA Button -->
+          <div style="text-align: center; margin: 40px 0;">
+            <a href="https://vibecodingaward.com" 
+               style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+              Visit Vibe Coding Award
+            </a>
+          </div>
+          
+          <!-- Footer -->
+          <div style="border-top: 1px solid #e5e7eb; padding-top: 30px; margin-top: 40px; text-align: center;">
+            <p style="color: #6b7280; font-size: 12px; margin: 0 0 10px 0;">
+              <a href="https://www.linkedin.com/company/vibe-coding-award/" style="color: #2563eb; text-decoration: none;">Follow us on LinkedIn</a> | 
+              <a href="mailto:hello@vibecodingaward.com" style="color: #2563eb; text-decoration: none;">hello@vibecodingaward.com</a>
+            </p>
+            <p style="color: #6b7280; font-size: 12px; margin: 0 0 10px 0;">
+              You're receiving this because you subscribed to the Vibe Coding Award newsletter.
+            </p>
+            <p style="color: #6b7280; font-size: 12px; margin: 0;">
+              © 2025 Vibe Coding Award
+            </p>
+          </div>
+        </div>
+      </div>
+    `
+  }),
+
+  monthlyNewsletter: (monthYear: string, winners: any[], featuredProjects: any[]) => ({
+    subject: `Vibe Coding Award - ${monthYear} Winners & Community Update`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; color: #000000;">
+        <h1 style="color: #2563eb; text-align: center; background-color: transparent;">Vibe Coding Award</h1>
+        <h2 style="text-align: center; color: #4b5563;">${monthYear} Winners & Community Update</h2>
+        
+        <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; color: #000000;">
+          <h3 style="margin-top: 0; color: #000000;">🏆 This Month's Winners</h3>
+          ${winners.map(winner => `
+            <div style="margin: 15px 0; padding: 15px; background-color: #ffffff; border-radius: 6px; border: 1px solid #e5e7eb;">
+              <h4 style="margin: 0 0 5px 0; color: #2563eb;">${winner.award}</h4>
+              <p style="margin: 0; font-weight: bold; color: #000000;">${winner.projectTitle}</p>
+              <p style="margin: 5px 0 0 0; color: #6b7280;">by ${winner.author}</p>
+            </div>
+          `).join('')}
+        </div>
+
+        ${featuredProjects.length > 0 ? `
+          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0; color: #000000;">
+            <h3 style="margin-top: 0; color: #000000;">✨ Featured Projects</h3>
+            ${featuredProjects.map(project => `
+              <div style="margin: 10px 0;">
+                <strong style="color: #000000;">${project.title}</strong> <span style="color: #000000;">by ${project.author}</span>
+                <p style="margin: 5px 0; color: #6b7280; font-size: 14px;">${project.description}</p>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${process.env.NEXTAUTH_URL}/submit" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Submit Your Project</a>
+        </div>
+
+        <!-- Footer -->
+        <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 30px; text-align: center;">
+          <p style="color: #6b7280; font-size: 12px; margin: 0 0 10px 0;">
+            <a href="https://www.linkedin.com/company/vibe-coding-award/" style="color: #2563eb; text-decoration: none;">Follow us on LinkedIn</a> | 
+            <a href="mailto:hello@vibecodingaward.com" style="color: #2563eb; text-decoration: none;">hello@vibecodingaward.com</a>
+          </p>
+          <p style="color: #6b7280; font-size: 12px; margin: 0 0 10px 0;">
             You're receiving this because you subscribed to the Vibe Coding Award newsletter.
           </p>
-          <p style="color: #9ca3af; font-size: 14px; margin: 0;">
-            © 2025 Vibe Coding Award • <a href="mailto:hello@vibecodingaward.com" style="color: #8b5cf6; text-decoration: none;">hello@vibecodingaward.com</a>
+          <p style="color: #6b7280; font-size: 12px; margin: 0;">
+            © 2025 Vibe Coding Award | <a href="${process.env.NEXTAUTH_URL}/unsubscribe" style="color: #6b7280; text-decoration: none;">Unsubscribe</a>
           </p>
         </div>
       </div>
-    </div>
-  `
-});
+    `
+  })
+};
 
-// Helper function for newsletter welcome email
+// Helper functions for common email scenarios
+export async function sendSubmissionConfirmation(userEmail: string, userName: string, projectTitle: string) {
+  const template = emailTemplates.submissionConfirmation(projectTitle, userName);
+  return sendEmail({
+    to: userEmail,
+    ...template
+  });
+}
+
+export async function sendWinnerNotification(userEmail: string, userName: string, projectTitle: string, awardType: string, month: string) {
+  const template = emailTemplates.winnerNotification(projectTitle, userName, awardType, month);
+  return sendEmail({
+    to: userEmail,
+    ...template
+  });
+}
+
 export async function sendNewsletterWelcome(userEmail: string) {
   const logoUrl = "https://vibecodingaward.com/VCA%20Logo.png";
-  const template = newsletterWelcomeTemplate(logoUrl);
+  const template = emailTemplates.newsletterWelcome(logoUrl);
   return sendEmail({
     to: userEmail,
     from: "Vibe Coding Award <hello@vibecodingaward.com>",
@@ -121,153 +259,10 @@ export async function sendNewsletterWelcome(userEmail: string) {
   });
 }
 
-// Project submission confirmation template
-export const submissionConfirmationTemplate = (projectTitle: string, userName: string, logoUrl: string) => ({
-  subject: `🎉 Project "${projectTitle}" submitted successfully!`,
-  html: `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-      <!-- Header -->
-      <div style="background-color: #ffffff; padding: 40px 20px; text-align: center; border-bottom: 1px solid #e5e7eb;">
-        <img src="${logoUrl}" alt="Vibe Coding Award" style="height: 80px; width: auto; margin-bottom: 20px;" />
-        <h1 style="color: #111827; margin: 0; font-size: 28px; font-weight: 700;">
-          Submission Confirmed! 🎉
-        </h1>
-      </div>
-      
-      <!-- Main content -->
-      <div style="padding: 40px 20px; background-color: #ffffff;">
-        <p style="font-size: 18px; line-height: 1.6; margin: 0 0 20px 0; color: #374151;">
-          Hi ${userName},
-        </p>
-        
-        <div style="background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #e5e7eb;">
-          <p style="font-size: 16px; line-height: 1.6; margin: 0 0 15px 0; color: #374151;">
-            Your project <strong>"${projectTitle}"</strong> has been successfully submitted to the Vibe Coding Award! 
-          </p>
-          <p style="font-size: 16px; line-height: 1.6; margin: 0; color: #6b7280;">
-            We're excited to review your innovative work and see how you've leveraged AI in your development process.
-          </p>
-        </div>
-        
-        <!-- Next steps -->
-        <div style="background-color: #f9fafb; padding: 25px; border-radius: 8px; border-left: 4px solid #8b5cf6; margin: 30px 0;">
-          <h2 style="color: #111827; font-size: 20px; font-weight: 600; margin: 0 0 15px 0;">What happens next?</h2>
-          <div style="margin-bottom: 12px;">
-            <span style="color: #8b5cf6; font-weight: 600;">1.</span>
-            <span style="color: #374151; margin-left: 8px;">Initial review and eligibility check</span>
-          </div>
-          <div style="margin-bottom: 12px;">
-            <span style="color: #8b5cf6; font-weight: 600;">2.</span>
-            <span style="color: #374151; margin-left: 8px;">Community voting phase begins</span>
-          </div>
-          <div style="margin-bottom: 12px;">
-            <span style="color: #8b5cf6; font-weight: 600;">3.</span>
-            <span style="color: #374151; margin-left: 8px;">Expert judging and evaluation</span>
-          </div>
-          <div>
-            <span style="color: #8b5cf6; font-weight: 600;">4.</span>
-            <span style="color: #374151; margin-left: 8px;">Winner announcement at month end</span>
-          </div>
-        </div>
-        
-        <div style="text-align: center; margin: 40px 0;">
-          <a href="https://vibecodingaward.com/dashboard" 
-             style="display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-            View Your Dashboard
-          </a>
-        </div>
-        
-        <!-- Footer -->
-        <div style="border-top: 1px solid #e5e7eb; padding-top: 30px; margin-top: 40px; text-align: center;">
-          <p style="color: #9ca3af; font-size: 14px; margin: 0;">
-            Good luck! • <a href="mailto:hello@vibecodingaward.com" style="color: #8b5cf6; text-decoration: none;">hello@vibecodingaward.com</a>
-          </p>
-        </div>
-      </div>
-    </div>
-  `
-});
-
-// Winner notification template
-export const winnerNotificationTemplate = (projectTitle: string, userName: string, awardType: string, logoUrl: string) => ({
-  subject: `🏆 Congratulations! You've won the ${awardType}!`,
-  html: `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-      <!-- Header -->
-      <div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); padding: 40px 20px; text-align: center;">
-        <img src="${logoUrl}" alt="Vibe Coding Award" style="height: 80px; width: auto; margin-bottom: 20px; filter: brightness(0) invert(1);" />
-        <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 700;">
-          🏆 Congratulations!
-        </h1>
-        <p style="color: rgba(255,255,255,0.9); font-size: 18px; margin: 10px 0 0 0;">
-          You're a Vibe Coding Award winner!
-        </p>
-      </div>
-      
-      <!-- Main content -->
-      <div style="padding: 40px 20px; background-color: #ffffff;">
-        <p style="font-size: 18px; line-height: 1.6; margin: 0 0 30px 0; color: #374151;">
-          Hi ${userName},
-        </p>
-        
-        <div style="background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 20%, #f59e0b 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px; text-align: center;">
-          <h2 style="color: #92400e; margin: 0 0 10px 0; font-size: 24px; font-weight: 700;">
-            ${awardType}
-          </h2>
-          <p style="color: #b45309; margin: 0; font-size: 20px; font-weight: 600;">
-            "${projectTitle}"
-          </p>
-        </div>
-        
-        <p style="font-size: 16px; line-height: 1.6; margin: 0 0 30px 0; color: #374151;">
-          Your innovative project has been selected as a winner! Your work showcases exactly what we're looking for - creative AI-assisted development that pushes boundaries while maintaining human creativity at its core.
-        </p>
-        
-        <!-- Winner benefits -->
-        <div style="background-color: #f9fafb; padding: 25px; border-radius: 8px; border-left: 4px solid #fbbf24; margin: 30px 0;">
-          <h3 style="color: #111827; font-size: 20px; font-weight: 600; margin: 0 0 15px 0;">Your Winner Benefits:</h3>
-          <div style="margin-bottom: 12px;">✨ Featured on the Vibe Coding Award homepage</div>
-          <div style="margin-bottom: 12px;">🏆 Permanent entry in our Winners Archive</div>
-          <div style="margin-bottom: 12px;">📱 Promotion across our social media channels</div>
-          <div>🎖️ Digital winner badge and certificate</div>
-        </div>
-        
-        <div style="text-align: center; margin: 40px 0;">
-          <a href="https://vibecodingaward.com" 
-             style="display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-            See Your Feature
-          </a>
-        </div>
-        
-        <!-- Footer -->
-        <div style="border-top: 1px solid #e5e7eb; padding-top: 30px; margin-top: 40px; text-align: center;">
-          <p style="color: #9ca3af; font-size: 14px; margin: 0;">
-            Thank you for being part of the vibe coding community! • <a href="mailto:hello@vibecodingaward.com" style="color: #8b5cf6; text-decoration: none;">hello@vibecodingaward.com</a>
-          </p>
-        </div>
-      </div>
-    </div>
-  `
-});
-
-// Helper function for submission confirmation email
-export async function sendSubmissionConfirmation(userEmail: string, userName: string, projectTitle: string) {
-  const logoUrl = "https://vibecodingaward.com/VCA%20Logo.png";
-  const template = submissionConfirmationTemplate(projectTitle, userName, logoUrl);
+export async function sendMonthlyNewsletter(subscriberEmail: string, monthYear: string, winners: any[], featuredProjects: any[] = []) {
+  const template = emailTemplates.monthlyNewsletter(monthYear, winners, featuredProjects);
   return sendEmail({
-    to: userEmail,
-    from: "Vibe Coding Award <hello@vibecodingaward.com>",
-    ...template
-  });
-}
-
-// Helper function for winner notification email
-export async function sendWinnerNotification(userEmail: string, userName: string, projectTitle: string, awardType: string) {
-  const logoUrl = "https://vibecodingaward.com/VCA%20Logo.png";
-  const template = winnerNotificationTemplate(projectTitle, userName, awardType, logoUrl);
-  return sendEmail({
-    to: userEmail,
-    from: "Vibe Coding Award <hello@vibecodingaward.com>",
+    to: subscriberEmail,
     ...template
   });
 } 

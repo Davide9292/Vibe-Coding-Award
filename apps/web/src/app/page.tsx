@@ -216,7 +216,7 @@ The premier independent award for the innovators and artisans of human-AI collab
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email address"
-                className="flex-1 h-16 md:h-16 px-6 md:pr-48 text-white placeholder-gray-400 font-barlow text-lg md:text-xl border border-[#7a7a7a] bg-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
+                className="flex-1 h-16 md:h-16 px-6 py-4 md:pr-48 text-white placeholder-gray-400 font-barlow text-lg md:text-xl border border-[#7a7a7a] bg-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
                 required
               />
               
@@ -244,6 +244,124 @@ The premier independent award for the innovators and artisans of human-AI collab
               </label>
             </div>
           </form>
+        </div>
+      </section>
+
+      {/* Award Categories Section */}
+      <section className="md:px-8 py-5">
+        <div className="bg-[#1A1A1A] rounded-[20px] p-4 md:p-12">
+          <div 
+            className="text-left md:text-center"
+            data-section="categories"
+          >
+            <div 
+              className={`transition-all duration-700 ${
+                isVisible['categories'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              <div className="mb-8">
+                <h2 className="section-title text-white mb-6 md:mb-8">
+                  Five Ways to Win
+                </h2>
+                <p className="text-lg md:text-lg lg:text-lg text-gray-300 leading-relaxed mb-8 md:mb-12 max-w-3xl mx-auto">
+                  Every month, we celebrate outstanding projects across five distinct categories. Find where your work fits best.
+                </p>
+                
+                {/* Categories Grid */}
+                <div className="flex overflow-x-auto md:grid md:grid-cols-5 gap-6 pb-4 md:pb-0">
+                  {/* Tools for Creators */}
+                  <div className="min-w-[280px] md:min-w-0 flex-shrink-0">
+                    <div 
+                      className="h-full p-6 rounded-[20px] text-left relative overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        backgroundImage: 'url("data:image/svg+xml,%3csvg width="100" height="100" xmlns="http://www.w3.org/2000/svg"%3e%3cdefs%3e%3cfilter id="noise"%3e%3cfeTurbulence baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/%3e%3c/filter%3e%3c/defs%3e%3crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.4"/%3e%3c/svg%3e")'
+                      }}
+                    >
+                      <h3 className="text-xl font-bold text-white mb-4">
+                        Tools for Creators
+                      </h3>
+                      <p className="text-white/90 text-sm leading-relaxed">
+                        For libraries, plugins, applications, or platforms designed to empower others. If your project is a paintbrush for the new creative era, this is its home.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Artistic & Experiential */}
+                  <div className="min-w-[280px] md:min-w-0 flex-shrink-0">
+                    <div 
+                      className="h-full p-6 rounded-[20px] text-left relative overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                        backgroundImage: 'url("data:image/svg+xml,%3csvg width="100" height="100" xmlns="http://www.w3.org/2000/svg"%3e%3cdefs%3e%3cfilter id="noise"%3e%3cfeTurbulence baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/%3e%3c/filter%3e%3c/defs%3e%3crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.4"/%3e%3c/svg%3e")'
+                      }}
+                    >
+                      <h3 className="text-xl font-bold text-white mb-4">
+                        Artistic & Experiential
+                      </h3>
+                      <p className="text-white/90 text-sm leading-relaxed">
+                        For interactive art, generative design, narrative experiences, and projects where the primary goal is to evoke emotion or explore a new aesthetic.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Products & Services */}
+                  <div className="min-w-[280px] md:min-w-0 flex-shrink-0">
+                    <div 
+                      className="h-full p-6 rounded-[20px] text-left relative overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                        backgroundImage: 'url("data:image/svg+xml,%3csvg width="100" height="100" xmlns="http://www.w3.org/2000/svg"%3e%3cdefs%3e%3cfilter id="noise"%3e%3cfeTurbulence baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/%3e%3c/filter%3e%3c/defs%3e%3crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.4"/%3e%3c/svg%3e")'
+                      }}
+                    >
+                      <h3 className="text-xl font-bold text-white mb-4">
+                        Products & Services
+                      </h3>
+                      <p className="text-white/90 text-sm leading-relaxed">
+                        For fully-fledged applications, SaaS products, or intelligent workflows that solve a real-world problem or offer a new service.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Experimental & Conceptual */}
+                  <div className="min-w-[280px] md:min-w-0 flex-shrink-0">
+                    <div 
+                      className="h-full p-6 rounded-[20px] text-left relative overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                        backgroundImage: 'url("data:image/svg+xml,%3csvg width="100" height="100" xmlns="http://www.w3.org/2000/svg"%3e%3cdefs%3e%3cfilter id="noise"%3e%3cfeTurbulence baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/%3e%3c/filter%3e%3c/defs%3e%3crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.4"/%3e%3c/svg%3e")'
+                      }}
+                    >
+                      <h3 className="text-xl font-bold text-gray-800 mb-4">
+                        Experimental & Conceptual
+                      </h3>
+                      <p className="text-gray-700 text-sm leading-relaxed">
+                        For the bold and the boundary-pushing. This category is for speculative designs, prototypes, and projects that explore "what if?" without needing a polished final product.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Open Submission */}
+                  <div className="min-w-[280px] md:min-w-0 flex-shrink-0">
+                    <div 
+                      className="h-full p-6 rounded-[20px] text-left relative overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+                        backgroundImage: 'url("data:image/svg+xml,%3csvg width="100" height="100" xmlns="http://www.w3.org/2000/svg"%3e%3cdefs%3e%3cfilter id="noise"%3e%3cfeTurbulence baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/%3e%3c/filter%3e%3c/defs%3e%3crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.4"/%3e%3c/svg%3e")'
+                      }}
+                    >
+                      <h3 className="text-xl font-bold text-gray-800 mb-4">
+                        Open Submission
+                      </h3>
+                      <p className="text-gray-700 text-sm leading-relaxed">
+                        If your project defies categorization, this is the place for it. For the mavericks, the genre-benders, and the truly unique creations.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -541,6 +659,8 @@ function ManifestoModal({ onClose }: { onClose: () => void }) {
 // Project Submission Modal Component (updated with white background)
 function ProjectSubmissionModal({ onClose }: { onClose: () => void }) {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addToast } = useToast();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -564,7 +684,83 @@ function ProjectSubmissionModal({ onClose }: { onClose: () => void }) {
 
   const totalSteps = 4;
 
+  // Validation function
+  const validateStep = (step: number) => {
+    const errors: string[] = [];
+    
+    switch (step) {
+      case 1:
+        if (!formData.email.trim()) {
+          errors.push('Email is required');
+        } else if (!isValidEmail(formData.email)) {
+          errors.push('Please enter a valid email address');
+        }
+        
+        if (!formData.title.trim()) {
+          errors.push('Project title is required');
+        }
+        
+        if (!formData.description.trim()) {
+          errors.push('Project description is required');
+        } else if (formData.description.trim().length < 50) {
+          errors.push('Project description must be at least 50 characters');
+        }
+        break;
+        
+      case 2:
+        // Step 2 has no mandatory fields, but validate URLs if provided
+        if (formData.demoUrl && !isValidUrl(formData.demoUrl)) {
+          errors.push('Demo URL is not valid');
+        }
+        if (formData.repoUrl && !isValidUrl(formData.repoUrl)) {
+          errors.push('Repository URL is not valid');
+        }
+        break;
+        
+      case 3:
+        if (!formData.vibeNarrative.trim()) {
+          errors.push('Vibe narrative is required');
+        } else if (formData.vibeNarrative.trim().length < 100) {
+          errors.push('Vibe narrative must be at least 100 characters');
+        }
+        break;
+        
+      case 4:
+        // Step 4 has no mandatory fields
+        break;
+    }
+    
+    return { isValid: errors.length === 0, errors };
+  };
+
+  const isValidUrl = (url: string): boolean => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const nextStep = () => {
+    const validation = validateStep(currentStep);
+    
+    if (!validation.isValid) {
+      validation.errors.forEach(error => {
+        addToast({
+          type: 'error',
+          title: 'Validation Error',
+          message: error
+        });
+      });
+      return;
+    }
+    
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     }
@@ -577,6 +773,23 @@ function ProjectSubmissionModal({ onClose }: { onClose: () => void }) {
   };
 
   const handleSubmit = async () => {
+    // Validate all steps before submission
+    for (let step = 1; step <= totalSteps; step++) {
+      const validation = validateStep(step);
+      if (!validation.isValid) {
+        validation.errors.forEach(error => {
+          addToast({
+            type: 'error',
+            title: 'Validation Error',
+            message: error
+          });
+        });
+        return;
+      }
+    }
+
+    setIsSubmitting(true);
+
     try {
       const response = await fetch('/api/projects', {
         method: 'POST',
@@ -589,14 +802,28 @@ function ProjectSubmissionModal({ onClose }: { onClose: () => void }) {
       const result = await response.json();
 
       if (response.ok) {
-        alert(`Thank you! Your project "${result.project.title}" has been submitted successfully. We'll be in touch soon.`);
+        addToast({
+          type: 'success',
+          title: 'Project Submitted!',
+          message: `Your project "${result.project.title}" has been submitted successfully.`
+        });
         onClose();
       } else {
-        alert(`Submission failed: ${result.error}`);
+        addToast({
+          type: 'error',
+          title: 'Submission Failed',
+          message: result.error || 'Please try again.'
+        });
       }
     } catch (error) {
       console.error('Submission error:', error);
-      alert('Failed to submit project. Please check your connection and try again.');
+      addToast({
+        type: 'error',
+        title: 'Connection Error',
+        message: 'Failed to submit project. Please check your connection and try again.'
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -613,10 +840,16 @@ function ProjectSubmissionModal({ onClose }: { onClose: () => void }) {
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                className="form-input-white"
+                className={`form-input-white ${!formData.email.trim() || !isValidEmail(formData.email) ? 'border-red-300' : ''}`}
                 placeholder="your@email.com"
                 required
               />
+              {!formData.email.trim() && (
+                <p className="text-sm text-red-600 mt-1">Email is required</p>
+              )}
+              {formData.email.trim() && !isValidEmail(formData.email) && (
+                <p className="text-sm text-red-600 mt-1">Please enter a valid email address</p>
+              )}
             </div>
             
             <div>
@@ -627,9 +860,12 @@ function ProjectSubmissionModal({ onClose }: { onClose: () => void }) {
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className="form-input-white"
+                className={`form-input-white ${!formData.title.trim() ? 'border-red-300' : ''}`}
                 placeholder="Enter your project title"
               />
+              {!formData.title.trim() && (
+                <p className="text-sm text-red-600 mt-1">Project title is required</p>
+              )}
             </div>
             
             <div>
@@ -639,9 +875,19 @@ function ProjectSubmissionModal({ onClose }: { onClose: () => void }) {
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                className="form-input-white min-h-[120px]"
-                placeholder="Describe what your project does and what makes it special"
+                className={`form-input-white min-h-[120px] ${!formData.description.trim() || formData.description.trim().length < 50 ? 'border-red-300' : ''}`}
+                placeholder="Describe what your project does and what makes it special (at least 50 characters)"
               />
+              <div className="flex justify-between items-center mt-1">
+                {(!formData.description.trim() || formData.description.trim().length < 50) && (
+                  <p className="text-sm text-red-600">
+                    {!formData.description.trim() ? 'Project description is required' : `Need ${50 - formData.description.trim().length} more characters`}
+                  </p>
+                )}
+                <p className="text-sm text-gray-500 ml-auto">
+                  {formData.description.length} characters
+                </p>
+              </div>
             </div>
           </div>
         );
@@ -657,9 +903,12 @@ function ProjectSubmissionModal({ onClose }: { onClose: () => void }) {
                 type="url"
                 value={formData.demoUrl}
                 onChange={(e) => setFormData(prev => ({ ...prev, demoUrl: e.target.value }))}
-                className="form-input-white"
+                className={`form-input-white ${formData.demoUrl && !isValidUrl(formData.demoUrl) ? 'border-red-300' : ''}`}
                 placeholder="https://your-project-demo.com"
               />
+              {formData.demoUrl && !isValidUrl(formData.demoUrl) && (
+                <p className="text-sm text-red-600 mt-1">Please enter a valid URL</p>
+              )}
             </div>
             
             <div>
@@ -670,9 +919,12 @@ function ProjectSubmissionModal({ onClose }: { onClose: () => void }) {
                 type="url"
                 value={formData.repoUrl}
                 onChange={(e) => setFormData(prev => ({ ...prev, repoUrl: e.target.value }))}
-                className="form-input-white"
+                className={`form-input-white ${formData.repoUrl && !isValidUrl(formData.repoUrl) ? 'border-red-300' : ''}`}
                 placeholder="https://github.com/username/project"
               />
+              {formData.repoUrl && !isValidUrl(formData.repoUrl) && (
+                <p className="text-sm text-red-600 mt-1">Please enter a valid URL</p>
+              )}
             </div>
           </div>
         );
@@ -685,14 +937,24 @@ function ProjectSubmissionModal({ onClose }: { onClose: () => void }) {
                 Vibe Narrative *
               </label>
               <p className="text-sm text-gray-600 mb-2">
-                Tell us the story of how you and AI collaborated to build this project.
+                Tell us the story of how you and AI collaborated to build this project. (At least 100 characters)
               </p>
               <textarea
                 value={formData.vibeNarrative}
                 onChange={(e) => setFormData(prev => ({ ...prev, vibeNarrative: e.target.value }))}
-                className="form-input-white min-h-[150px]"
+                className={`form-input-white min-h-[150px] ${!formData.vibeNarrative.trim() || formData.vibeNarrative.trim().length < 100 ? 'border-red-300' : ''}`}
                 placeholder="Describe your human-AI collaboration journey..."
               />
+              <div className="flex justify-between items-center mt-1">
+                {(!formData.vibeNarrative.trim() || formData.vibeNarrative.trim().length < 100) && (
+                  <p className="text-sm text-red-600">
+                    {!formData.vibeNarrative.trim() ? 'Vibe narrative is required' : `Need ${100 - formData.vibeNarrative.trim().length} more characters`}
+                  </p>
+                )}
+                <p className="text-sm text-gray-500 ml-auto">
+                  {formData.vibeNarrative.length} characters
+                </p>
+              </div>
             </div>
           </div>
         );
@@ -790,9 +1052,10 @@ function ProjectSubmissionModal({ onClose }: { onClose: () => void }) {
             ) : (
               <button
                 onClick={handleSubmit}
-                className="btn-primary-white"
+                disabled={isSubmitting}
+                className="btn-primary-white disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Submit Project
+                {isSubmitting ? 'Submitting...' : 'Submit Project'}
               </button>
             )}
           </div>
