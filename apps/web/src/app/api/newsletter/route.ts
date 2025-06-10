@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     // Send confirmation email with Resend
     try {
       const emailResult = await resend.emails.send({
-        from: 'Vibe Coding Award <onboarding@resend.dev>',
+        from: 'Vibe Coding Award <hello@vibecodingaward.com>',
         to: email,
         subject: 'Welcome to the Vibe Coding Award Inner Circle! 🚀',
         html: `
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
             <div style="text-align: center; font-size: 14px; color: #666; margin-top: 40px;">
               <p>© 2025 Vibe Coding Award</p>
               <p>
-                <a href="mailto:info@vibecodingaward.com" style="color: #666;">info@vibecodingaward.com</a>
+                <a href="mailto:hello@vibecodingaward.com" style="color: #666;">hello@vibecodingaward.com</a>
               </p>
             </div>
           </div>
