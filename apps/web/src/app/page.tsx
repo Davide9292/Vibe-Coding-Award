@@ -2,14 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import { User, Rocket, Users, Mail, Linkedin, X } from 'lucide-react';
+import { ToastProvider, useToast, toast } from '@/components/ui/toast';
 
-export default function HomePage() {
+function HomePage() {
   const [isVisible, setIsVisible] = useState<Record<string, boolean>>({});
   const [email, setEmail] = useState('');
   const [newsletterConsent, setNewsletterConsent] = useState(false);
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [showManifesto, setShowManifesto] = useState(false);
   const [showCookieConsent, setShowCookieConsent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addToast } = useToast();
 
   useEffect(() => {
     // Check if user has already given cookie consent
@@ -59,22 +62,22 @@ export default function HomePage() {
     }
   };
 
-
-
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate consent checkbox
     if (!newsletterConsent) {
-      alert('Please confirm you want to join our newsletter to continue.');
+      addToast(toast.warning('Consent Required', 'Please confirm you want to join our newsletter to continue.'));
       return;
     }
     
     // Simple email validation
     if (!email || !email.includes('@')) {
-      alert('Please enter a valid email address.');
+      addToast(toast.error('Invalid Email', 'Please enter a valid email address.'));
       return;
     }
+
+    setIsSubmitting(true);
 
     try {
       const response = await fetch('/api/newsletter', {
@@ -88,15 +91,17 @@ export default function HomePage() {
       const result = await response.json();
 
       if (response.ok) {
-        alert('Thank you! Please check your email for confirmation.');
+        addToast(toast.success('Welcome to the Inner Circle!', 'Please check your email for confirmation. 🚀'));
         setEmail('');
         setNewsletterConsent(false);
       } else {
-        alert(`Subscription failed: ${result.error}`);
+        addToast(toast.error('Subscription Failed', result.error || 'Please try again.'));
       }
     } catch (error) {
       console.error('Subscription error:', error);
-      alert('Failed to subscribe. Please check your connection and try again.');
+      addToast(toast.error('Connection Error', 'Failed to subscribe. Please check your connection and try again.'));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -217,9 +222,10 @@ The premier independent award for the innovators and artisans of human-AI collab
               
               <button
                 type="submit"
-                className="btn-primary-m h-16 px-8 md:absolute md:right-2 md:top-2 md:h-12 md:px-6 flex-shrink-0"
+                disabled={isSubmitting}
+                className="btn-primary-m h-16 px-8 md:absolute md:right-2 md:top-2 md:h-12 md:px-6 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Join the Inner Circle
+                {isSubmitting ? 'Joining...' : 'Join the Inner Circle'}
               </button>
             </div>
             
@@ -240,8 +246,6 @@ The premier independent award for the innovators and artisans of human-AI collab
           </form>
         </div>
       </section>
-
-
 
       {/* Call for Pioneers Section - Fixed Container */}
       <section className="md:px-8 py-5">
@@ -795,5 +799,14 @@ function ProjectSubmissionModal({ onClose }: { onClose: () => void }) {
         </div>
       </div>
     </div>
+  );
+}
+
+// Wrap the main component with ToastProvider
+export default function HomePageWithToast() {
+  return (
+    <ToastProvider>
+      <HomePage />
+    </ToastProvider>
   );
 } 
