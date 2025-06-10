@@ -5,14 +5,9 @@ import { User, Rocket, Users, Mail, Linkedin, X } from 'lucide-react';
 
 export default function HomePage() {
   const [isVisible, setIsVisible] = useState<Record<string, boolean>>({});
-  const [email, setEmail] = useState('');
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [showManifesto, setShowManifesto] = useState(false);
   const [showCookieConsent, setShowCookieConsent] = useState(false);
-  const [newsletterConsent, setNewsletterConsent] = useState(false);
-
-  // Feature flag for newsletter functionality
-  const isNewsletterEnabled = process.env.NEXT_PUBLIC_ENABLE_NEWSLETTER === 'true';
 
   useEffect(() => {
     // Check if user has already given cookie consent
@@ -62,37 +57,7 @@ export default function HomePage() {
     }
   };
 
-  const handleEmailSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!newsletterConsent) {
-      alert('Please confirm you want to join our newsletter to continue.');
-      return;
-    }
 
-    try {
-      const response = await fetch('/api/newsletter', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, consent: newsletterConsent }),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        alert('Thank you for joining the Inner Circle! Please check your email for confirmation.');
-        setEmail('');
-        setNewsletterConsent(false);
-      } else {
-        alert(`Subscription failed: ${result.error}`);
-      }
-    } catch (error) {
-      console.error('Subscription error:', error);
-      alert('Failed to subscribe. Please check your connection and try again.');
-    }
-  };
 
   const handleShareProject = () => {
     setShowSubmissionForm(true);
@@ -181,11 +146,7 @@ export default function HomePage() {
 
       {/* Introduction Section - Conditional Padding Based on Newsletter Flag */}
       <section 
-        className={`md:px-8 transition-all duration-700 ${
-          isNewsletterEnabled 
-            ? 'py-20 md:py-40' 
-            : 'py-20 md:py-20'
-        }`}
+        className="md:px-8 transition-all duration-700 py-20 md:py-20"
         data-section="intro"
       >
         <div 
@@ -197,68 +158,13 @@ export default function HomePage() {
             Championing the Pioneers of the Next Creative Era.
           </h1>
           
-          <h2 className={`text-lg md:text-xl lg:text-2xl font-light text-gray-300 leading-relaxed ${
-            isNewsletterEnabled 
-              ? 'mb-8 md:mb-16' 
-              : 'mb-8 md:mb-8'
-          }`}>
-            The premier independent award for the innovators and artisans of human-AI collaboration.
+          <h2 className="text-lg md:text-xl lg:text-2xl font-light text-gray-300 leading-relaxed mb-8 md:mb-8">
+The premier independent award for the innovators and artisans of human-AI collaboration.
           </h2>
         </div>
       </section>
 
-      {/* Email Capture Section - Feature Flagged */}
-      {isNewsletterEnabled && (
-        <section 
-          data-section="email"
-          className={`md:px-8 py-12 md:py-16 transition-all duration-1000 ease-out transform ${
-            isVisible.email 
-              ? 'translate-y-0 opacity-100' 
-              : 'translate-y-8 opacity-0'
-          }`}
-        >
-          <div className="text-center max-w-4xl mx-auto px-5 md:px-8">
-            <p className="text-xl md:text-2xl text-gray-300 font-barlow leading-relaxed mb-8 md:mb-12 max-w-3xl mx-auto">
-              Join our inner circle of creative builders and be the first to know when submissions open. 
-              Connect with fellow pioneers who are redefining what's possible with AI.
-            </p>
-            
-            {/* Email Capture Form - Responsive Design */}
-            <form onSubmit={handleEmailSubmit} className="w-full flex flex-col md:flex-row gap-4 md:gap-0 md:relative">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Your email address"
-                className="flex-1 h-16 md:h-16 px-6 md:pr-48 text-black placeholder-[#7a7a7a] font-barlow text-lg md:text-xl border border-[#7a7a7a] bg-black rounded-full focus:outline-none focus:ring-2 focus:ring-white"
-                required
-              />
-              
-              {/* Newsletter Consent Checkbox */}
-              <div className="flex items-center gap-3 mb-2 md:mb-0 md:absolute md:bottom-[-50px] md:left-2">
-                <input
-                  type="checkbox"
-                  id="newsletter-consent"
-                  checked={newsletterConsent}
-                  onChange={(e) => setNewsletterConsent(e.target.checked)}
-                  className="w-4 h-4 text-white bg-transparent border-2 border-gray-400 rounded focus:ring-white focus:ring-2"
-                  required
-                />
-                <label htmlFor="newsletter-consent" className="text-sm text-gray-300 leading-tight">
-                  I want to join the newsletter and receive updates about the Vibe Coding Award
-                </label>
-              </div>
-              
-              <button
-                type="submit"
-                className="btn-primary-m h-16 px-8 md:absolute md:right-2 md:top-2 md:h-12 md:px-6 flex-shrink-0"
-              >
-                Join the Inner Circle
-              </button>
-            </form>
-          </div>
-        </section>
-      )}
+
 
       {/* Call for Pioneers Section - Fixed Container */}
       <section className="md:px-8 py-5">

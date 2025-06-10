@@ -4,14 +4,14 @@ import nodemailer from 'nodemailer';
 
 const prisma = new PrismaClient();
 
-// Configure AWS SES transporter
+// Configure SendGrid SMTP transporter
 const transporter = nodemailer.createTransport({
-  host: process.env.AWS_SES_SMTP_HOST,
+  host: 'smtp.sendgrid.net',
   port: 587,
   secure: false,
   auth: {
-    user: process.env.AWS_SES_SMTP_USERNAME,
-    pass: process.env.AWS_SES_SMTP_PASSWORD,
+    user: 'apikey',
+    pass: process.env.SENDGRID_API_KEY,
   },
 });
 
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation email
     const confirmationEmail = {
-      from: process.env.FROM_EMAIL || 'hello@vibecodingaward.com',
+      from: process.env.FROM_EMAIL || 'info@vibecodingaward.com',
       to: email,
       subject: 'Welcome to the Vibe Coding Award Inner Circle! 🚀',
       html: `
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
           <div style="text-align: center; font-size: 14px; color: #666; margin-top: 40px;">
             <p>© 2025 Vibe Coding Award</p>
             <p>
-              <a href="mailto:hello@vibecodingaward.com" style="color: #666;">hello@vibecodingaward.com</a>
+              <a href="mailto:info@vibecodingaward.com" style="color: #666;">info@vibecodingaward.com</a>
             </p>
           </div>
         </div>
