@@ -1,19 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 const prisma = new PrismaClient();
-
-// Configure SendGrid SMTP transporter
-const transporter = nodemailer.createTransport({
-  host: 'smtp.sendgrid.net',
-  port: 587,
-  secure: false,
-  auth: {
-    user: 'apikey',
-    pass: process.env.SENDGRID_API_KEY,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,13 +38,20 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Send confirmation email
-    const confirmationEmail = {
+    // Send confirmation email with Resend
+    await resend.emails.send({
       from: 'info@vibecodingaward.com',
       to: email,
       subject: 'Welcome to the Vibe Coding Award Inner Circle! 🚀',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px 20px;">
+          <!-- Logo Header -->
+          <div style="text-align: center; margin-bottom: 30px;">
+            <img src="https://vibecodingaward.com/Vibe%20Coding%20Award%20Logo.svg" 
+                 alt="Vibe Coding Award" 
+                 style="height: 60px; width: auto;" />
+          </div>
+          
           <div style="text-align: center; margin-bottom: 40px;">
             <h1 style="color: #fff; font-size: 28px; margin: 0;">Welcome to the Inner Circle!</h1>
           </div>
@@ -86,9 +83,7 @@ export async function POST(request: NextRequest) {
           </div>
         </div>
       `,
-    };
-
-    await transporter.sendMail(confirmationEmail);
+    });
 
     return NextResponse.json(
       { 

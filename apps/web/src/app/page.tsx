@@ -6,6 +6,7 @@ import { User, Rocket, Users, Mail, Linkedin, X } from 'lucide-react';
 export default function HomePage() {
   const [isVisible, setIsVisible] = useState<Record<string, boolean>>({});
   const [email, setEmail] = useState('');
+  const [newsletterConsent, setNewsletterConsent] = useState(false);
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [showManifesto, setShowManifesto] = useState(false);
   const [showCookieConsent, setShowCookieConsent] = useState(false);
@@ -63,6 +64,12 @@ export default function HomePage() {
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validate consent checkbox
+    if (!newsletterConsent) {
+      alert('Please confirm you want to join our newsletter to continue.');
+      return;
+    }
+    
     // Simple email validation
     if (!email || !email.includes('@')) {
       alert('Please enter a valid email address.');
@@ -75,7 +82,7 @@ export default function HomePage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, consent: true }),
+        body: JSON.stringify({ email, consent: newsletterConsent }),
       });
 
       const result = await response.json();
@@ -83,6 +90,7 @@ export default function HomePage() {
       if (response.ok) {
         alert('Thank you! Please check your email for confirmation.');
         setEmail('');
+        setNewsletterConsent(false);
       } else {
         alert(`Subscription failed: ${result.error}`);
       }
@@ -196,22 +204,39 @@ The premier independent award for the innovators and artisans of human-AI collab
           </h2>
           
           {/* Email Input Field */}
-          <form onSubmit={handleEmailSubmit} className="w-full max-w-2xl mx-auto flex flex-col md:flex-row gap-4 md:gap-0 md:relative">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Your email address"
-              className="flex-1 h-16 md:h-16 px-6 md:pr-48 text-white placeholder-gray-400 font-barlow text-lg md:text-xl border border-[#7a7a7a] bg-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
-              required
-            />
+          <form onSubmit={handleEmailSubmit} className="w-full max-w-2xl mx-auto">
+            <div className="flex flex-col md:flex-row gap-4 md:gap-0 md:relative mb-4">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Your email address"
+                className="flex-1 h-16 md:h-16 px-6 md:pr-48 text-white placeholder-gray-400 font-barlow text-lg md:text-xl border border-[#7a7a7a] bg-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
+                required
+              />
+              
+              <button
+                type="submit"
+                className="btn-primary-m h-16 px-8 md:absolute md:right-2 md:top-2 md:h-12 md:px-6 flex-shrink-0"
+              >
+                Join the Inner Circle
+              </button>
+            </div>
             
-            <button
-              type="submit"
-              className="btn-primary-m h-16 px-8 md:absolute md:right-2 md:top-2 md:h-12 md:px-6 flex-shrink-0"
-            >
-              Join the Inner Circle
-            </button>
+            {/* Newsletter Consent Checkbox */}
+            <div className="flex items-center gap-3 justify-center md:justify-start">
+              <input
+                type="checkbox"
+                id="newsletter-consent"
+                checked={newsletterConsent}
+                onChange={(e) => setNewsletterConsent(e.target.checked)}
+                className="w-4 h-4 text-white bg-transparent border-2 border-gray-400 rounded focus:ring-white focus:ring-2"
+                required
+              />
+              <label htmlFor="newsletter-consent" className="text-sm text-gray-300 leading-tight">
+                I want to join the newsletter and receive updates about the Vibe Coding Award
+              </label>
+            </div>
           </form>
         </div>
       </section>
