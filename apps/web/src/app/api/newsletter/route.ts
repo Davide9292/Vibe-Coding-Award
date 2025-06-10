@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation email
     const confirmationEmail = {
-      from: process.env.FROM_EMAIL || 'info@vibecodingaward.com',
+      from: 'info@vibecodingaward.com',
       to: email,
       subject: 'Welcome to the Vibe Coding Award Inner Circle! 🚀',
       html: `
