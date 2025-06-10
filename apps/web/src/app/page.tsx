@@ -417,6 +417,124 @@ The premier independent award for the innovators and artisans of human-AI collab
         </div>
       </section>
 
+      {/* Award Categories Section */}
+      <section className="md:px-8 py-5">
+        <div className="bg-[#1A1A1A] rounded-[20px] p-4 md:p-12">
+          <div 
+            className="text-left md:text-center"
+            data-section="categories"
+          >
+            <div 
+              className={`transition-all duration-700 ${
+                isVisible['categories'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              <div className="mb-8">
+                <h2 className="section-title text-white mb-6 md:mb-8">
+                  Five Ways to Win
+                </h2>
+                <p className="text-lg md:text-lg lg:text-lg text-gray-300 leading-relaxed mb-8 md:mb-12 max-w-3xl mx-auto">
+                  Every month, we celebrate outstanding projects across five distinct categories. Find where your work fits best.
+                </p>
+                
+                {/* Categories Grid */}
+                <div className="flex overflow-x-auto md:grid md:grid-cols-5 gap-6 pb-4 md:pb-0">
+                  {/* Tools for Creators */}
+                  <div className="min-w-[280px] md:min-w-0 flex-shrink-0">
+                    <div 
+                      className="h-full p-6 rounded-[20px] text-left relative overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        backgroundImage: 'url("data:image/svg+xml,%3csvg width="100" height="100" xmlns="http://www.w3.org/2000/svg"%3e%3cdefs%3e%3cfilter id="noise"%3e%3cfeTurbulence baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/%3e%3c/filter%3e%3c/defs%3e%3crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.4"/%3e%3c/svg%3e")'
+                      }}
+                    >
+                      <h3 className="text-xl font-bold text-white mb-4">
+                        Tools for Creators
+                      </h3>
+                      <p className="text-white/90 text-sm leading-relaxed">
+                        For libraries, plugins, applications, or platforms designed to empower others. If your project is a paintbrush for the new creative era, this is its home.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Artistic & Experiential */}
+                  <div className="min-w-[280px] md:min-w-0 flex-shrink-0">
+                    <div 
+                      className="h-full p-6 rounded-[20px] text-left relative overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                        backgroundImage: 'url("data:image/svg+xml,%3csvg width="100" height="100" xmlns="http://www.w3.org/2000/svg"%3e%3cdefs%3e%3cfilter id="noise"%3e%3cfeTurbulence baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/%3e%3c/filter%3e%3c/defs%3e%3crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.4"/%3e%3c/svg%3e")'
+                      }}
+                    >
+                      <h3 className="text-xl font-bold text-white mb-4">
+                        Artistic & Experiential
+                      </h3>
+                      <p className="text-white/90 text-sm leading-relaxed">
+                        For interactive art, generative design, narrative experiences, and projects where the primary goal is to evoke emotion or explore a new aesthetic.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Products & Services */}
+                  <div className="min-w-[280px] md:min-w-0 flex-shrink-0">
+                    <div 
+                      className="h-full p-6 rounded-[20px] text-left relative overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                        backgroundImage: 'url("data:image/svg+xml,%3csvg width="100" height="100" xmlns="http://www.w3.org/2000/svg"%3e%3cdefs%3e%3cfilter id="noise"%3e%3cfeTurbulence baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/%3e%3c/filter%3e%3c/defs%3e%3crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.4"/%3e%3c/svg%3e")'
+                      }}
+                    >
+                      <h3 className="text-xl font-bold text-white mb-4">
+                        Products & Services
+                      </h3>
+                      <p className="text-white/90 text-sm leading-relaxed">
+                        For fully-fledged applications, SaaS products, or intelligent workflows that solve a real-world problem or offer a new service.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Experimental & Conceptual */}
+                  <div className="min-w-[280px] md:min-w-0 flex-shrink-0">
+                    <div 
+                      className="h-full p-6 rounded-[20px] text-left relative overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                        backgroundImage: 'url("data:image/svg+xml,%3csvg width="100" height="100" xmlns="http://www.w3.org/2000/svg"%3e%3cdefs%3e%3cfilter id="noise"%3e%3cfeTurbulence baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/%3e%3c/filter%3e%3c/defs%3e%3crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.4"/%3e%3c/svg%3e")'
+                      }}
+                    >
+                      <h3 className="text-xl font-bold text-gray-800 mb-4">
+                        Experimental & Conceptual
+                      </h3>
+                      <p className="text-gray-700 text-sm leading-relaxed">
+                        For the bold and the boundary-pushing. This category is for speculative designs, prototypes, and projects that explore "what if?" without needing a polished final product.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Open Submission */}
+                  <div className="min-w-[280px] md:min-w-0 flex-shrink-0">
+                    <div 
+                      className="h-full p-6 rounded-[20px] text-left relative overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+                        backgroundImage: 'url("data:image/svg+xml,%3csvg width="100" height="100" xmlns="http://www.w3.org/2000/svg"%3e%3cdefs%3e%3cfilter id="noise"%3e%3cfeTurbulence baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/%3e%3c/filter%3e%3c/defs%3e%3crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.4"/%3e%3c/svg%3e")'
+                      }}
+                    >
+                      <h3 className="text-xl font-bold text-gray-800 mb-4">
+                        Open Submission
+                      </h3>
+                      <p className="text-gray-700 text-sm leading-relaxed">
+                        If your project defies categorization, this is the place for it. For the mavericks, the genre-benders, and the truly unique creations.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Bottom Cards Section - Full Width */}
       <section className="md:px-8 py-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
