@@ -17,7 +17,7 @@ export async function sendEmail({ to, subject, html, from }: EmailOptions) {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     const result = await resend.emails.send({
-      from: from || process.env.FROM_EMAIL || "noreply@vibecodingaward.com",
+      from: from || process.env.FROM_EMAIL || "Vibe Coding Award <noreply@vibecodingaward.com>",
       to,
       subject,
       html,
