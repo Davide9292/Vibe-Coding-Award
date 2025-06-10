@@ -5,6 +5,7 @@ import { User, Rocket, Users, Mail, Linkedin, X } from 'lucide-react';
 
 export default function HomePage() {
   const [isVisible, setIsVisible] = useState<Record<string, boolean>>({});
+  const [email, setEmail] = useState('');
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [showManifesto, setShowManifesto] = useState(false);
   const [showCookieConsent, setShowCookieConsent] = useState(false);
@@ -58,6 +59,38 @@ export default function HomePage() {
   };
 
 
+
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Simple email validation
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, consent: true }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('Thank you! Please check your email for confirmation.');
+        setEmail('');
+      } else {
+        alert(`Subscription failed: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      alert('Failed to subscribe. Please check your connection and try again.');
+    }
+  };
 
   const handleShareProject = () => {
     setShowSubmissionForm(true);
@@ -158,9 +191,28 @@ export default function HomePage() {
             Championing the Pioneers of the Next Creative Era.
           </h1>
           
-          <h2 className="text-lg md:text-xl lg:text-2xl font-light text-gray-300 leading-relaxed mb-8 md:mb-8">
+          <h2 className="text-lg md:text-xl lg:text-2xl font-light text-gray-300 leading-relaxed mb-8 md:mb-12">
 The premier independent award for the innovators and artisans of human-AI collaboration.
           </h2>
+          
+          {/* Email Input Field */}
+          <form onSubmit={handleEmailSubmit} className="w-full max-w-2xl mx-auto flex flex-col md:flex-row gap-4 md:gap-0 md:relative">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Your email address"
+              className="flex-1 h-16 md:h-16 px-6 md:pr-48 text-white placeholder-gray-400 font-barlow text-lg md:text-xl border border-[#7a7a7a] bg-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
+              required
+            />
+            
+            <button
+              type="submit"
+              className="btn-primary-m h-16 px-8 md:absolute md:right-2 md:top-2 md:h-12 md:px-6 flex-shrink-0"
+            >
+              Join the Inner Circle
+            </button>
+          </form>
         </div>
       </section>
 
