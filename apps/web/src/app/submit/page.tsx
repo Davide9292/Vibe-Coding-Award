@@ -11,7 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus, Upload, Link as LinkIcon, Github, ExternalLink, Chrome } from "lucide-react";
+import { X, Plus, Upload, Link as LinkIcon, Github, ExternalLink, Chrome, AlertCircle } from "lucide-react";
+import { ToastProvider, useToast, toast } from "@/components/ui/toast";
 
 const PROJECT_CATEGORIES = [
   "WEB_APP",
@@ -74,10 +75,12 @@ interface FormData {
   }>;
 }
 
-export default function SubmitProjectPage() {
+function SubmitProjectPage() {
   const { data: session, status } = useSession();
   const [currentStep, setCurrentStep] = useState(1);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addToast } = useToast();
   const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
@@ -107,6 +110,81 @@ export default function SubmitProjectPage() {
   });
 
   const totalSteps = 4;
+
+  // Validation functions for each step
+  const validateStep = (step: number): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    
+    switch (step) {
+      case 1:
+        if (!formData.title.trim()) {
+          errors.push("Project title is required");
+        }
+        if (!formData.description.trim()) {
+          errors.push("Project description is required");
+        }
+        if (formData.description.trim() && formData.description.trim().length < 50) {
+          errors.push("Project description should be at least 50 characters");
+        }
+        break;
+        
+      case 2:
+        // Step 2 has no mandatory fields, but we can validate URL formats if provided
+        const urlFields = [
+          { value: formData.demoUrl, name: "Demo URL" },
+          { value: formData.repoUrl, name: "Repository URL" },
+          { value: formData.videoUrl, name: "Video URL" },
+          { value: formData.downloadUrl, name: "Download URL" }
+        ];
+        
+        urlFields.forEach(field => {
+          if (field.value && !isValidUrl(field.value)) {
+            errors.push(`${field.name} must be a valid URL`);
+          }
+        });
+        break;
+        
+      case 3:
+        if (!formData.vibeNarrative.trim()) {
+          errors.push("Vibe narrative is required");
+        }
+        if (formData.vibeNarrative.trim() && formData.vibeNarrative.trim().length < 100) {
+          errors.push("Vibe narrative should be at least 100 characters to tell your story properly");
+        }
+        if (formData.aiTools.length === 0) {
+          errors.push("Please select at least one AI tool you used");
+        }
+        if (formData.aiTools.includes("Other") && !formData.customAiTool.trim()) {
+          errors.push("Please specify the custom AI tool");
+        }
+        break;
+        
+      case 4:
+        // Step 4 has no mandatory fields, but we can validate team member emails if provided
+        formData.teamMembers.forEach((member, index) => {
+          if (member.email && !isValidEmail(member.email)) {
+            errors.push(`Team member ${index + 1} has an invalid email address`);
+          }
+        });
+        break;
+    }
+    
+    return { isValid: errors.length === 0, errors };
+  };
+
+  const isValidUrl = (url: string): boolean => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const addTag = () => {
     if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
@@ -159,8 +237,19 @@ export default function SubmitProjectPage() {
   };
 
   const nextStep = () => {
+    const validation = validateStep(currentStep);
+    
+    if (!validation.isValid) {
+      // Show validation errors
+      validation.errors.forEach(error => {
+        addToast(toast.error("Validation Error", error));
+      });
+      return;
+    }
+    
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
+      addToast(toast.success("Step Completed", "Your progress has been saved!"));
     }
   };
 
@@ -177,6 +266,31 @@ export default function SubmitProjectPage() {
       return;
     }
 
+    // Validate final step
+    const validation = validateStep(currentStep);
+    if (!validation.isValid) {
+      validation.errors.forEach(error => {
+        addToast(toast.error("Validation Error", error));
+      });
+      return;
+    }
+
+    // Validate all required fields across all steps
+    const step1Validation = validateStep(1);
+    const step3Validation = validateStep(3);
+    
+    if (!step1Validation.isValid) {
+      addToast(toast.error("Incomplete Project Basics", "Please go back and complete all required fields in step 1"));
+      return;
+    }
+    
+    if (!step3Validation.isValid) {
+      addToast(toast.error("Incomplete Vibe Story", "Please go back and complete all required fields in step 3"));
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
       const response = await fetch("/api/projects", {
         method: "POST",
@@ -188,7 +302,8 @@ export default function SubmitProjectPage() {
 
       if (response.ok) {
         const result = await response.json();
-        alert(`Project "${result.project.title}" submitted successfully!`);
+        addToast(toast.success("Project Submitted Successfully!", `"${result.project.title}" has been submitted and will be reviewed by our team.`, 8000));
+        
         // Reset form or redirect
         setFormData({
           title: "",
@@ -213,11 +328,13 @@ export default function SubmitProjectPage() {
         setShowAuthPrompt(false);
       } else {
         const error = await response.json();
-        alert(`Submission failed: ${error.error}`);
+        addToast(toast.error("Submission Failed", error.error || "Please try again."));
       }
     } catch (error) {
       console.error("Submission error:", error);
-      alert("Failed to submit project. Please try again.");
+      addToast(toast.error("Connection Error", "Failed to submit project. Please check your connection and try again."));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -227,25 +344,44 @@ export default function SubmitProjectPage() {
         return (
           <div className="space-y-6">
             <div>
-              <Label htmlFor="title">Project Title *</Label>
+              <Label htmlFor="title" className="flex items-center gap-2">
+                Project Title <span className="text-red-500">*</span>
+                {!formData.title.trim() && <AlertCircle className="h-4 w-4 text-red-500" />}
+              </Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="Enter your project title"
-                className="mt-2"
+                className={`mt-2 ${!formData.title.trim() ? 'border-red-300' : ''}`}
               />
+              {!formData.title.trim() && (
+                <p className="text-sm text-red-600 mt-1">Project title is required</p>
+              )}
             </div>
             
             <div>
-              <Label htmlFor="description">Project Description *</Label>
+              <Label htmlFor="description" className="flex items-center gap-2">
+                Project Description <span className="text-red-500">*</span>
+                {!formData.description.trim() && <AlertCircle className="h-4 w-4 text-red-500" />}
+              </Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Describe what your project does and what makes it special"
-                className="mt-2 min-h-[120px]"
+                placeholder="Describe what your project does and what makes it special (at least 50 characters)"
+                className={`mt-2 min-h-[120px] ${!formData.description.trim() || formData.description.trim().length < 50 ? 'border-red-300' : ''}`}
               />
+              <div className="flex justify-between items-center mt-1">
+                {(!formData.description.trim() || formData.description.trim().length < 50) && (
+                  <p className="text-sm text-red-600">
+                    {!formData.description.trim() ? 'Project description is required' : `Need ${50 - formData.description.trim().length} more characters`}
+                  </p>
+                )}
+                <p className="text-sm text-gray-500 ml-auto">
+                  {formData.description.length} characters
+                </p>
+              </div>
             </div>
             
             <div>
@@ -354,21 +490,40 @@ export default function SubmitProjectPage() {
         return (
           <div className="space-y-6">
             <div>
-              <Label htmlFor="vibeNarrative">Vibe Narrative *</Label>
+              <Label htmlFor="vibeNarrative" className="flex items-center gap-2">
+                Vibe Narrative <span className="text-red-500">*</span>
+                {!formData.vibeNarrative.trim() && <AlertCircle className="h-4 w-4 text-red-500" />}
+              </Label>
               <p className="text-sm text-gray-600 mt-1">
-                Tell us the story of how you and AI collaborated to build this project. What was the creative process like?
+                Tell us the story of how you and AI collaborated to build this project. What was the creative process like? (At least 100 characters)
               </p>
               <Textarea
                 id="vibeNarrative"
                 value={formData.vibeNarrative}
                 onChange={(e) => setFormData(prev => ({ ...prev, vibeNarrative: e.target.value }))}
                 placeholder="Describe your human-AI collaboration journey..."
-                className="mt-2 min-h-[150px]"
+                className={`mt-2 min-h-[150px] ${!formData.vibeNarrative.trim() || formData.vibeNarrative.trim().length < 100 ? 'border-red-300' : ''}`}
               />
+              <div className="flex justify-between items-center mt-1">
+                {(!formData.vibeNarrative.trim() || formData.vibeNarrative.trim().length < 100) && (
+                  <p className="text-sm text-red-600">
+                    {!formData.vibeNarrative.trim() ? 'Vibe narrative is required' : `Need ${100 - formData.vibeNarrative.trim().length} more characters`}
+                  </p>
+                )}
+                <p className="text-sm text-gray-500 ml-auto">
+                  {formData.vibeNarrative.length} characters
+                </p>
+              </div>
             </div>
             
             <div>
-              <Label>AI Tools Used</Label>
+              <Label className="flex items-center gap-2">
+                AI Tools Used <span className="text-red-500">*</span>
+                {formData.aiTools.length === 0 && <AlertCircle className="h-4 w-4 text-red-500" />}
+              </Label>
+              {formData.aiTools.length === 0 && (
+                <p className="text-sm text-red-600 mt-1">Please select at least one AI tool you used</p>
+              )}
               <div className="grid grid-cols-2 gap-3 mt-2">
                 {AI_TOOLS.map(tool => (
                   <div key={tool} className="flex items-center space-x-2">
@@ -631,8 +786,12 @@ export default function SubmitProjectPage() {
                     Next Step
                   </Button>
                 ) : (
-                  <Button onClick={handleSubmit} variant="electric">
-                    Submit Project
+                  <Button 
+                    onClick={handleSubmit} 
+                    variant="electric"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Submitting..." : "Submit Project"}
                   </Button>
                 )}
               </div>
@@ -643,5 +802,14 @@ export default function SubmitProjectPage() {
 
       {showAuthPrompt && <AuthPrompt />}
     </div>
+  );
+}
+
+// Wrap the main component with ToastProvider
+export default function SubmitProjectPageWithToast() {
+  return (
+    <ToastProvider>
+      <SubmitProjectPage />
+    </ToastProvider>
   );
 } 
