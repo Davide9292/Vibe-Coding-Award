@@ -291,6 +291,7 @@ model NewsletterSubscriber {
   id          String   @id @default(cuid())
   email       String   @unique
   name        String?
+  profession  String?  // User's role/profession (designer, developer, dreamer, etc.)
   subscribed  Boolean  @default(true)
   source      String?  // Where they subscribed from
   createdAt   DateTime @default(now())

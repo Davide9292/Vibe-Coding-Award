@@ -58,8 +58,8 @@ function ToastContainer() {
   const { toasts, removeToast } = useToast();
 
   return (
-    <div className="fixed bottom-0 right-0 z-50 p-6 pointer-events-none">
-      <div className="flex flex-col gap-2">
+    <div className="fixed top-4 right-4 z-50 pointer-events-none">
+      <div className="flex flex-col gap-3">
         {toasts.map(toast => (
           <ToastItem
             key={toast.id}
@@ -82,32 +82,32 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
 
   const colors = {
     success: {
-      bg: 'bg-green-50',
-      border: 'border-green-200',
+      bg: 'bg-white',
+      border: 'border-green-400',
       icon: 'text-green-500',
-      title: 'text-green-800',
-      message: 'text-green-700',
+      title: 'text-gray-900',
+      message: 'text-gray-600',
     },
     error: {
-      bg: 'bg-red-50',
-      border: 'border-red-200',
+      bg: 'bg-white',
+      border: 'border-red-400',
       icon: 'text-red-500',
-      title: 'text-red-800',
-      message: 'text-red-700',
+      title: 'text-gray-900',
+      message: 'text-gray-600',
     },
     warning: {
-      bg: 'bg-yellow-50',
-      border: 'border-yellow-200',
-      icon: 'text-yellow-500',
-      title: 'text-yellow-800',
-      message: 'text-yellow-700',
+      bg: 'bg-white',
+      border: 'border-orange-400',
+      icon: 'text-orange-500',
+      title: 'text-gray-900',
+      message: 'text-gray-600',
     },
     info: {
-      bg: 'bg-blue-50',
-      border: 'border-blue-200',
+      bg: 'bg-white',
+      border: 'border-blue-400',
       icon: 'text-blue-500',
-      title: 'text-blue-800',
-      message: 'text-blue-700',
+      title: 'text-gray-900',
+      message: 'text-gray-600',
     },
   };
 
@@ -117,35 +117,34 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
   return (
     <div 
       className={`
-        pointer-events-auto max-w-sm w-full ${colorClasses.bg} ${colorClasses.border} 
-        border rounded-lg shadow-lg transform transition-all duration-300 ease-in-out
-        animate-in slide-in-from-right-full
+        pointer-events-auto min-w-[320px] max-w-md ${colorClasses.bg} ${colorClasses.border} 
+        border-l-4 rounded-lg shadow-lg backdrop-blur-sm
+        transform transition-all duration-300 ease-out
+        animate-in slide-in-from-right-5 fade-in-0
       `}
     >
       <div className="p-4">
-        <div className="flex items-start">
-          <div className="flex-shrink-0">
+        <div className="flex items-start gap-3">
+          <div className="flex-shrink-0 mt-0.5">
             <Icon className={`h-5 w-5 ${colorClasses.icon}`} />
           </div>
-          <div className="ml-3 w-0 flex-1">
-            <p className={`text-sm font-medium ${colorClasses.title}`}>
+          <div className="flex-1 min-w-0">
+            <p className={`text-sm font-semibold ${colorClasses.title} leading-tight`}>
               {toast.title}
             </p>
             {toast.message && (
-              <p className={`mt-1 text-sm ${colorClasses.message}`}>
+              <p className={`mt-1 text-sm ${colorClasses.message} leading-relaxed`}>
                 {toast.message}
               </p>
             )}
           </div>
-          <div className="ml-4 flex-shrink-0 flex">
-            <button
-              className={`inline-flex ${colorClasses.message} hover:${colorClasses.title} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-${toast.type}-50 focus:ring-${toast.type}-600 rounded-md`}
-              onClick={onClose}
-            >
-              <span className="sr-only">Close</span>
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+          <button
+            className={`flex-shrink-0 ml-2 ${colorClasses.message} hover:text-gray-900 transition-colors rounded-md p-1 hover:bg-gray-100`}
+            onClick={onClose}
+          >
+            <span className="sr-only">Close</span>
+            <X className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </div>

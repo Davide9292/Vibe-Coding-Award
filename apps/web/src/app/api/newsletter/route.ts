@@ -4,7 +4,7 @@ import { sendNewsletterWelcome } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, consent } = await request.json();
+    const { email, name, profession, consent } = await request.json();
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -39,6 +39,8 @@ export async function POST(request: NextRequest) {
     const subscriber = await prisma.newsletterSubscriber.create({
       data: {
         email,
+        name: name || null,
+        profession: profession || null,
         subscribed: true,
         source: 'website_signup'
       }
