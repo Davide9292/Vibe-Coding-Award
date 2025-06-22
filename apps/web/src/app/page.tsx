@@ -83,7 +83,7 @@ function HomePage() {
 
         {/* Main Heading */}
         <div className="text-center max-w-4xl mx-auto mb-2 md:mb-40">
-          <h1 className="text-4xl md:text-6xl lg:text-6xl font-regular leading-tight tracking-tight mb-6 text-black">
+          <h1 className="text-5xl md:text-6xl lg:text-6xl font-regular leading-tight mb-6 text-black tracking-[-0.15rem]">
             The Stage for AI-Native Creation
           </h1>
           <p className="text-lg md:text-xl text-black max-w-2xl mx-auto mb-8">
@@ -109,7 +109,7 @@ function HomePage() {
             </span>
           </div>
           
-          <h2 className="text-7xl md:text-6xl lg:text-9xl font-regular leading-tighter tracking-[-0.4rem] md:tracking-tighter mb-6">
+          <h2 className="text-7xl md:text-6xl lg:text-9xl font-regular leading-tighter tracking-[-0.3rem] md:tracking-tighter mb-6">
             Human creativity is a frontier to be expanded.
           </h2>
           
@@ -124,7 +124,7 @@ function HomePage() {
       {/* Categories Section */}
       <section className="py-20 px-4 bg-gradient-to-b from-[#E94629] to-[#E93030]">
         <div className="max-w-8xl mx-auto text-left md:text-center">
-          <div className="mb-4 md:mb-4">
+          <div className="block mb-4 md:mb-4 p-4 round-8" style={{backgroundColor:'rgba(255, 255, 255, 0.15)'}}>
             <span className="text-m uppercase tracking-wider text-white font-semibold">
               CATEGORIES
             </span>
@@ -270,10 +270,10 @@ function HomePage() {
         }}
       >
         <div className="max-w-8xl mx-auto ">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-3">
             {/* For Leaders & Jurors */}
             <div 
-              className="text-center md:text-center p-8 rounded-[20px]"
+              className="text-left md:text-center p-4 md:p-8 rounded-[20px]"
               style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 backdropFilter: 'blur(20px)',
@@ -297,7 +297,7 @@ function HomePage() {
 
             {/* For Partners & Press */}
             <div 
-              className="text-center md:text-center p-8 rounded-[20px]"
+              className="text-left md:text-center p-4 md:p-8 rounded-[20px]"
               style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 backdropFilter: 'blur(20px)',
@@ -328,7 +328,7 @@ function HomePage() {
             <img src="/Vibe Coding Award Logo.svg" alt="Vibe Coding Award" className="h-16 w-auto mr-4" />
           </div>
           
-          <div className="flex items-center space-x-6">
+          <div className="flex flex-col md:flex-row items-center gap-4">
             <span className="text-sm text-gray-400">Join the conversation on</span>
             <a href="https://www.linkedin.com/company/vibe-coding-award/" className="text-sm text-white hover:text-gray-300 underline">
               LinkedIn
