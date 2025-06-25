@@ -1,424 +1,967 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
-import { ToastProvider, useToast, toast } from '@/components/ui/toast';
 
-function HomePage() {
-  const [showModal, setShowModal] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [profession, setProfession] = useState('');
+// TypeScript declaration for spline-viewer web component
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'spline-viewer': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        url?: string;
+      };
+    }
+  }
+}
+
+interface TimeLeft {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+interface NewsletterFormData {
+  email: string;
+  name: string;
+  profession: string;
+  consent: boolean;
+}
+
+interface ProjectFormData {
+  title: string;
+  description: string;
+  category: string;
+  demoUrl: string;
+  repoUrl: string;
+  videoUrl: string;
+  downloadUrl: string;
+  vibeNarrative: string;
+  aiTools: string[];
+  customAiTool: string;
+  aiGeneratedPercent: number;
+  aiRefactoredPercent: number;
+  humanWrittenPercent: number;
+  learnings: string;
+  challenges: string;
+  teamMembers: Array<{
+    name: string;
+    role: string;
+    email: string;
+    github: string;
+  }>;
+  email: string;
+}
+
+// Spline Web Component
+function SplineViewer() {
+  useEffect(() => {
+    // Load the Spline viewer script
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = 'https://unpkg.com/@splinetool/viewer@1.10.13/build/spline-viewer.js';
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup script on unmount
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
+    };
+  }, []);
+
+  return (
+    <spline-viewer 
+      url="https://prod.spline.design/573Wj58x9dEfxJGw/scene.splinecode"
+      style={{ width: '100%', height: '100%' }}
+    >
+      <img 
+        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAANCAYAAADISGwcAAAG1ElEQVR4AQCBAH7/AE0pbxNNKW8PTSlvCU0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvBk0pbxJNKW8cTSlvJE0pbydNKW8mTSlvIE0pbxZNKW8KTSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ETSlvD00pbxdNKW8cAIEAfv8ATSlvCk0pbwZNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8GTSlvEk0pbx5NKW8lTSlvKU0pbyhNKW8hTSlvF00pbwpNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8DTSlvC00pbw8AgQB+/wBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbw1NKW8bTSlvJ00pbzBNKW80TSlvMk0pbytNKW8gTSlvEU0pbwFNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAACBAH7/AE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwJNKW8RTSlvIU0pbzFNKW8/TSlvSE0pb01NKW9LTSlvQ00pbzdNKW8nTSlvFU0pbwNNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8AAIEAfv8ATSlvDE0pbwpNKW8GTSlvAU0pbwBNKW8ATSlvAE0pbwRNKW8OTSlvHU0pby5NKW9ATSlvUk0pb2FNKW9rTSlvcE0pb29NKW9nTSlvWU0pb0hNKW80TSlvIE0pbw5NKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAk0pbwUAgQB+/wBNKW8aTSlvGE0pbxVNKW8RTSlvDk0pbw5NKW8STSlvGU0pbyVNKW81TSlvSE0pb1xNKW9vTSlvf00pb4pNKW+QTSlvjk0pb4ZNKW94TSlvZk0pb1FNKW88TSlvKE0pbxhNKW8MTSlvBk0pbwNNKW8ETSlvCE0pbwxNKW8QTSlvEwCBAH7/AE0pbx5NKW8cTSlvGU0pbxZNKW8TTSlvFE0pbxdNKW8fTSlvLE0pbz1NKW9QTSlvZE0pb3hNKW+JTSlvlU0pb5pNKW+ZTSlvkU0pb4RNKW9xTSlvXE0pb0dNKW8zTSlvIk0pbxZNKW8PTSlvDE0pbwxNKW8PTSlvFE0pbxdNKW8ZAIEAfv8ATSlvFE0pbxJNKW8OTSlvCk0pbwhNKW8HTSlvCk0pbxFNKW8dTSlvLU0pb0BNKW9UTSlvaE0pb3hNKW+ETSlvik0pb4lNKW+CTSlvdU0pb2NNKW9PTSlvOk0pbydNKW8YTSlvDE0pbwVNKW8DTSlvBE0pbwhNKW8NTSlvEE0pbxMAgQB+/wBNKW8DTSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwFNKW8QTSlvIU0pbzNNKW9GTSlvVU0pb2FNKW9nTSlvZk0pb2BNKW9UTSlvQ00pbzFNKW8eTSlvDU0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8CTSlvBQCBAH7/AE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8CTSlvE00pbyNNKW8yTSlvPE0pb0JNKW9CTSlvPE0pbzFNKW8jTSlvEk0pbwJNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8AAIEAfv8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvDk0pbxtNKW8lTSlvKk0pbypNKW8lTSlvG00pbw5NKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwAAgQB+/wBNKW8OTSlvCk0pbwJNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8JTSlvFE0pbx1NKW8iTSlvIk0pbx1NKW8UTSlvCU0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwRNKW8LTSlvDwGBAH7/AE0pbxxNKW8XTSlvD00pbwVNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwpNKW8VTSlvHU0pbyJNKW8iTSlvHU0pbxVNKW8KTSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8FTSlvD00pbxdNKW8c3habaHBN6GYAAAAASUVORK5CYII=" 
+        alt="Spline preview" 
+        style={{ width: '100%', height: '100%' }}
+      />
+    </spline-viewer>
+  );
+}
+
+export default function HomePage() {
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+  const [mounted, setMounted] = useState(false);
+  const [showNewsletterModal, setShowNewsletterModal] = useState(false);
+  const [showProjectModal, setShowProjectModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { addToast } = useToast();
+  const [submitMessage, setSubmitMessage] = useState('');
+  const [currentStep, setCurrentStep] = useState(1);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const [newsletterForm, setNewsletterForm] = useState<NewsletterFormData>({
+    email: '',
+    name: '',
+    profession: '',
+    consent: false
+  });
+
+  const [projectForm, setProjectForm] = useState<ProjectFormData>({
+    title: '',
+    description: '',
+    category: '',
+    demoUrl: '',
+    repoUrl: '',
+    videoUrl: '',
+    downloadUrl: '',
+    vibeNarrative: '',
+    aiTools: [],
+    customAiTool: '',
+    aiGeneratedPercent: 0,
+    aiRefactoredPercent: 0,
+    humanWrittenPercent: 100,
+    learnings: '',
+    challenges: '',
+    teamMembers: [{ name: '', role: '', email: '', github: '' }],
+    email: ''
+  });
+
+  useEffect(() => {
+    setMounted(true);
+    
+    const calculateTimeLeft = () => {
+      // July 13, 2025 at 23:59 ET (Eastern Time)
+      const targetDate = new Date('2025-07-13T23:59:00-05:00').getTime();
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((difference % (1000 * 60)) / 1000)
+        });
+      }
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!name.trim()) {
-      addToast(toast.error('Name Required', 'Please enter your name.'));
-      return;
-    }
-    
-    if (!email || !email.includes('@')) {
-      addToast(toast.error('Invalid Email', 'Please enter a valid email address.'));
-      return;
-    }
-
     setIsSubmitting(true);
+    setSubmitMessage('');
 
     try {
       const response = await fetch('/api/newsletter', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          email, 
-          name, 
-          profession: profession || null,
-          consent: true 
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newsletterForm)
       });
 
-      const result = await response.json();
+      const data = await response.json();
 
       if (response.ok) {
-        addToast(toast.success('Welcome to the Vanguard!', 'You\'re now part of the movement. 🚀'));
-        setName('');
-        setEmail('');
-        setProfession('');
-        setShowModal(false);
+        setSubmitMessage('Successfully subscribed! Check your email for confirmation.');
+        setNewsletterForm({ email: '', name: '', profession: '', consent: false });
+        setTimeout(() => setShowNewsletterModal(false), 2000);
       } else {
-        addToast(toast.error('Subscription Failed', result.error || 'Please try again.'));
+        setSubmitMessage(data.error || 'Something went wrong. Please try again.');
       }
     } catch (error) {
-      console.error('Newsletter subscription error:', error);
-      addToast(toast.error('Connection Error', 'Failed to subscribe. Please check your connection and try again.'));
+      setSubmitMessage('Network error. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleProjectSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage('');
+
+    try {
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(projectForm)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSubmitMessage('Project submitted successfully! Check your email for confirmation.');
+        setProjectForm({
+          title: '',
+          description: '',
+          category: '',
+          demoUrl: '',
+          repoUrl: '',
+          videoUrl: '',
+          downloadUrl: '',
+          vibeNarrative: '',
+          aiTools: [],
+          customAiTool: '',
+          aiGeneratedPercent: 0,
+          aiRefactoredPercent: 0,
+          humanWrittenPercent: 100,
+          learnings: '',
+          challenges: '',
+          teamMembers: [{ name: '', role: '', email: '', github: '' }],
+          email: ''
+        });
+        setCurrentStep(1);
+        setTimeout(() => setShowProjectModal(false), 2000);
+      } else {
+        setSubmitMessage(data.error || 'Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      setSubmitMessage('Network error. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const openLinkedIn = () => {
+    window.open('https://www.linkedin.com/company/vibe-coding-award/', '_blank');
+  };
+
+  const openContact = () => {
+    window.open('mailto:hello@vibecodingaward.com', '_blank');
+  };
+
+  const openPartnership = () => {
+    window.open('mailto:partners@vibecodingaward.com', '_blank');
+  };
+
+  if (!mounted) {
+    return null; // Prevent hydration mismatch
+  }
+
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Hero Section with Top Gradient */}
-      <section 
-        className="relative min-h-screen flex flex-col items-center justify-center px-4"
-        style={{
-          backgroundImage: 'url(/gradient_top.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      >
-        {/* Logo */}
-        <div className="mb-20 md:mb-32">
-          <img
-            src="/Vibe Coding Award Logo.svg"
-            alt="Vibe Coding Award"
-            className="h-24 w-auto filter brightness-0"
-          />
-        </div>
-
-        {/* Main Heading */}
-        <div className="text-center max-w-4xl mx-auto mb-2 md:mb-40">
-          <h1 className="text-5xl md:text-6xl lg:text-6xl font-regular leading-tight mb-6 text-black tracking-[-0.15rem]">
-            The Stage for AI-Native Creation
-          </h1>
-          <p className="text-lg md:text-xl text-black max-w-2xl mx-auto mb-8">
-            A new award celebrating the pioneers of human-AI collaboration. The inaugural season is coming.
-          </p>
-          
-          {/* CTA Button */}
-          <button
-            onClick={() => setShowModal(true)}
-            className="bg-black text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#ffffff] hover:text-black transition-colors"
-          >
-            Join the Vanguard
-          </button>
-        </div>
-      </section>
-
-      {/* Manifesto Section */}
-      <section className="pt-2 pb-12 md:pb-28 px-4" style={{ background: 'linear-gradient(to bottom, #E94629, #E94629)' }}>
-        <div className="max-w-7xl mx-auto text-left md:text-center">
-          <div className="mb-4">
-            <span className="text-m uppercase tracking-wider text-white font-semibold">
-              OUR MANIFESTO
-            </span>
+    <div className="bg-white text-black font-barlow"
+         style={{ color: 'black' }}>
+      {/* Body margins: 32px desktop, 20px mobile */}
+      <div className="px-5 md:px-8 space-y-5">
+        
+        {/* Header & Hero Section - Fixed height desktop, responsive mobile */}
+        <section className="h-[750px] md:h-[750px] hero-mobile flex flex-col items-center justify-start relative">
+          {/* Logo - 85px high, 50px from top on desktop, left-aligned on mobile */}
+          <div className="absolute top-12 md:top-12.5 logo-mobile">
+            <img
+              src="/Vibe Coding Award Logo.svg"
+              alt="Vibe Coding Award"
+              className="h-[85px] w-auto"
+            />
           </div>
-          
-          <h2 className="text-7xl md:text-6xl lg:text-9xl font-regular leading-tighter tracking-[-0.3rem] md:tracking-tighter mb-6">
-            Human creativity is a frontier to be expanded.
-          </h2>
-          
-          <p className="text-lg md:text-xl text-orange-100 max-w-4xl mx-auto leading-relaxed">
-            We are entering a new era of digital craftsmanship, defined by the dialogue between human 
-            intuition and machine logic. The Vibe Coding Award exists to illuminate the work of those who 
-            master this new artform, celebrating projects of unprecedented originality and resonance.
-          </p>
-        </div>
-      </section>
 
-      {/* Categories Section */}
-      <section className="py-20 px-4 bg-gradient-to-b from-[#E94629] to-[#E93030]">
-        <div className="max-w-8xl mx-auto text-left md:text-center">
-          <div className="block mb-4 md:mb-4 p-4 round-8" style={{backgroundColor:'rgba(255, 255, 255, 0.15)'}}>
-            <span className="text-m uppercase tracking-wider text-white font-semibold">
-              CATEGORIES
-            </span>
-          </div>
-          
-          <h2 className="text-4xl md:text-6xl font-regular tracking-tight mb-4">
-            Every great project has a home here.
-          </h2>
-          
-          <p className="text-lg text-white mb-8">
-            Find where your work belongs.
-          </p>
+          {/* Main content vertically centered in remaining space */}
+          <div className="flex flex-col items-center justify-center flex-1 mt-[135px] md:mt-[135px] mobile-hero-content">
+            {/* Text below logo - 64px gap on mobile */}
+            <p className="text-lg md:text-xl font-medium leading-7 mb-12 md:mb-12 mb-8 text-center text-color mobile-hero-text">
+              The Stage for AI-Native Creation opens in:
+            </p>
 
-          {/* Category Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                         {/* Websites Category */}
-             <div 
-               className="relative p-4 md:p-8 rounded-2xl text-left"
-               style={{
-                 backgroundImage: 'url(/category_card_background.png)',
-                 backgroundSize: 'cover',
-                 backgroundPosition: 'center'
-               }}
-             >
-               <div className="mb-4">
-                 <span className="text-s uppercase tracking-wider text-black font-semibold">
-                   CATEGORY 1
-                 </span>
-               </div>
-               <div className="mb-4">
-                 <img src="/category_websites.png" alt="Websites" className="w-auto h-20 object-contain" />
-               </div>
-               <p className="text-s text-black leading-relaxed">
-                 For beautifully crafted websites, interactive landing pages, online portfolios, and any web-based project where design and user experience are central.
-               </p>
-             </div>
-
-                         {/* Apps Category */}
-             <div 
-               className="relative p-4 md:p-8 rounded-2xl text-left"
-               style={{
-                 backgroundImage: 'url(/category_card_background.png)',
-                 backgroundSize: 'cover',
-                 backgroundPosition: 'center'
-               }}
-             >
-               <div className="mb-4">
-                 <span className="text-s uppercase tracking-wider text-black font-semibold">
-                   CATEGORY 2
-                 </span>
-               </div>
-               <div className="mb-4">
-                 <img src="/category_apps.png" alt="Apps" className="w-auto h-20 object-contain" />
-               </div>
-               <p className="text-s text-black leading-relaxed">
-                 For mobile, desktop, or web applications designed to solve problems, boost productivity, or offer a unique service. This includes tools, plugins, and SaaS products.
-               </p>
-             </div>
-
-                         {/* Games Category */}
-             <div 
-               className="relative p-4 md:p-8 rounded-2xl text-left"
-               style={{
-                 backgroundImage: 'url(/category_card_background.png)',
-                 backgroundSize: 'cover',
-                 backgroundPosition: 'center'
-               }}
-             >
-               <div className="mb-4">
-                 <span className="text-s uppercase tracking-wider text-black font-semibold">
-                   CATEGORY 3
-                 </span>
-               </div>
-               <div className="mb-4">
-                 <img src="/category_games.png" alt="Games" className="w-auto h-20 object-contain" />
-               </div>
-               <p className="text-s text-black leading-relaxed">
-                 For games of any genre and platform, from simple web-based games to complex immersive worlds, that showcase innovative gameplay or narrative.
-               </p>
-             </div>
-
-                         {/* X Category */}
-             <div 
-               className="relative p-4 md:p-8 rounded-2xl text-left"
-               style={{
-                 backgroundImage: 'url(/category_card_background.png)',
-                 backgroundSize: 'cover',
-                 backgroundPosition: 'center'
-               }}
-             >
-               <div className="mb-4">
-                 <span className="text-s uppercase tracking-wider text-black font-semibold">
-                   CATEGORY X
-                 </span>
-               </div>
-               <div className="mb-4">
-                 <img src="/category_x.png" alt="X" className="w-auto h-20 object-contain" />
-               </div>
-               <p className="text-s text-black leading-relaxed">
-                 If your project defies easy categorization—from generative art experiments to hardware integrations—this is its home. Surprise us.
-               </p>
-             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Inspiration Quote Section */}
-      <section className="pt-12 pb-20 px-4 bg-gradient-to-b from-[#E93030] to-[#E93030]">
-        <div className="max-w-4xl mx-auto text-left md:text-center">
-          <p className="text-lg md:text-xl text-white leading-relaxed mb-1">
-            That flash of inspiration you had at 2 AM, brought to life with{' '}
-            <span className="text-white font-semibold">Cursor</span>.
-          </p>
-          <p className="text-lg md:text-xl text-white leading-relaxed mb-1">
-            That fluid interface you crafted by having a real conversation with{' '}
-            <span className="text-white font-semibold">Lovable</span>.
-          </p>
-          <p className="text-lg md:text-xl text-white leading-relaxed mb-1">
-            The things you're building aren't on any roadmap.
-          </p>
-          
-          <p className="text-xl md:text-2xl font-semibold text-white mb-8">
-            They exist because of your ingenuity and your dialogue with AI.
-          </p>
-
-          <button
-            onClick={() => setShowModal(true)}
-            className="bg-black text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#ffffff] hover:text-black transition-colors"
-          >
-            Join the Vanguard
-          </button>
-        </div>
-      </section>
-
-      {/* Bottom Section with Leaders & Jurors */}
-      <section 
-        className="relative pt-12 px-4"
-        style={{
-          backgroundImage: 'url(/gradient_bottom.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'top',
-          backgroundRepeat: 'no-repeat'
-        }}
-      >
-        <div className="max-w-8xl mx-auto ">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-3">
-            {/* For Leaders & Jurors */}
-            <div 
-              className="text-left md:text-center p-4 md:p-8 rounded-[20px]"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(200px)'
-              }}
-            >
-              <h3 className="text-2xl md:text-3xl font-bold mb-4">
-              Excellence Recognizes Excellence
-              </h3>
-              <p className="text-white mb-8 leading-relaxed">
-                Want to shape the future? We are assembling our inaugural jury of industry leaders.
-              </p>
-                             <a 
-                 href="mailto:info@vibecodingaward.com?subject=Juror%20Application%20-%20Industry%20Leader%20Interest&body=Hello%20Vibe%20Coding%20Award%20Team%2C%0A%0AI%20am%20interested%20in%20becoming%20a%20juror%20for%20the%20inaugural%20Vibe%20Coding%20Award.%0A%0AAbout%20me%3A%0A-%20Name%3A%20%5BYour%20Name%5D%0A-%20Company%2FOrganization%3A%20%5BYour%20Company%5D%0A-%20Role%2FTitle%3A%20%5BYour%20Position%5D%0A-%20LinkedIn%3A%20%5BYour%20LinkedIn%20Profile%5D%0A-%20Years%20of%20experience%20in%20tech%2Fcreative%20industries%3A%20%5BYears%5D%0A%0AExpertise%20areas%20%28please%20select%20relevant%29%3A%0A%E2%98%90%20Web%20Development%0A%E2%98%90%20Mobile%20Apps%0A%E2%98%90%20Game%20Development%0A%E2%98%90%20AI%2FML%0A%E2%98%90%20Design%2FUX%0A%E2%98%90%20Creative%20Technology%0A%E2%98%90%20Other%3A%20%5BSpecify%5D%0A%0AWhy%20I%20want%20to%20be%20a%20juror%3A%0A%5BPlease%20share%20your%20motivation%20and%20what%20you%20hope%20to%20contribute%20to%20the%20award%5D%0A%0AAvailability%20for%20judging%20period%3A%0A%5BPlease%20indicate%20your%20availability%5D%0A%0AThank%20you%20for%20considering%20my%20application.%20I%20look%20forward%20to%20helping%20shape%20the%20future%20of%20AI-native%20creation.%0A%0ABest%20regards%2C%0A%5BYour%20Name%5D"
-                 className="text-white px-6 py-3 rounded-full font-semibold hover:bg-[#ffffff] hover:text-black transition-colors inline-block" 
-                 style={{border:'solid 1px', borderColor:'#ffffff'}}
-               >
-                 Inquire About Judging
-               </a>
-            </div>
-
-            {/* For Partners & Press */}
-            <div 
-              className="text-left md:text-center p-4 md:p-8 rounded-[20px]"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(200px)'
-              }}
-            >
-              <h3 className="text-2xl md:text-3xl font-bold mb-4">
-                For Partners & Press
-              </h3>
-              <p className="text-white mb-8 leading-relaxed">
-                Believe in our mission? Partner with us to amplify the next generation of talent.
-              </p>
-                             <a 
-                 href="mailto:info@vibecodingaward.com?subject=Partnership%20Inquiry%20-%20Vibe%20Coding%20Award&body=Hello%20Vibe%20Coding%20Award%20Team%2C%0A%0AI%20am%20interested%20in%20exploring%20a%20partnership%20opportunity%20with%20the%20Vibe%20Coding%20Award.%0A%0AOrganization%20Details%3A%0A-%20Company%2FOrganization%3A%20%5BYour%20Organization%5D%0A-%20Contact%20Person%3A%20%5BYour%20Name%5D%0A-%20Role%2FTitle%3A%20%5BYour%20Position%5D%0A-%20Website%3A%20%5BYour%20Website%5D%0A-%20Industry%3A%20%5BYour%20Industry%5D%0A%0APartnership%20Interest%20%28please%20select%20relevant%29%3A%0A%E2%98%90%20Sponsorship%20Opportunities%0A%E2%98%90%20Media%20Partnership%0A%E2%98%90%20Technology%20Partnership%0A%E2%98%90%20Prize%20Contribution%0A%E2%98%90%20Event%20Collaboration%0A%E2%98%90%20Community%20Support%0A%E2%98%90%20Other%3A%20%5BSpecify%5D%0A%0AWhat%20we%20can%20offer%3A%0A%5BPlease%20describe%20what%20your%20organization%20can%20bring%20to%20the%20partnership%5D%0A%0AWhat%20we%20hope%20to%20achieve%3A%0A%5BPlease%20share%20your%20goals%20and%20expectations%20from%20this%20partnership%5D%0A%0AProposed%20timeline%3A%0A%5BWhen%20would%20you%20like%20to%20start%20this%20partnership%3F%5D%0A%0AAdditional%20information%3A%0A%5BAny%20other%20relevant%20details%20or%20questions%5D%0A%0AThank%20you%20for%20your%20time.%20We%20believe%20in%20the%20power%20of%20collaboration%20to%20amplify%20the%20next%20generation%20of%20AI-native%20creators.%0A%0ABest%20regards%2C%0A%5BYour%20Name%5D"
-                 className="text-white px-6 py-3 rounded-full font-semibold hover:bg-[#ffffff] hover:text-black transition-colors inline-block" 
-                 style={{border:'solid 1px', borderColor:'#ffffff'}}
-               >
-                 Discuss Partnership
-               </a>
-            </div>
-          </div>
-        </div>
-              {/* Footer */}
-      <footer className="pb-12 pt-20 px-4" style={{
-                backgroundColor: 'rgba(255, 255, 255, 0)',}}>
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center mb-6 md:mb-0">
-            <img src="/Vibe Coding Award Logo.svg" alt="Vibe Coding Award" className="h-16 w-auto mr-4" />
-          </div>
-          
-          <div className="flex flex-col md:flex-row items-center gap-4">
-            <span className="text-sm text-gray-400">Join the conversation on</span>
-            <a href="https://www.linkedin.com/company/vibe-coding-award/" className="text-sm text-white hover:text-gray-300 underline">
-              LinkedIn
-            </a>
-            <a href="mailto:info@vibecodingaward.com" className="text-sm text-white hover:text-gray-300 underline">
-              Contact us
-            </a>
-          </div>
-        </div>
-      </footer>
-      </section>
-
-
-
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-semibold text-black">Join the Vanguard</h3>
-              <button 
-                onClick={() => setShowModal(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X size={24} />
-              </button>
-            </div>
-            
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Name *
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 text-black"
-                  required
-                />
+            {/* Countdown Timer - 240x180px boxes on desktop, 2x2 grid on mobile */}
+            <div className="hidden md:flex gap-4 mb-15">
+              {/* Days */}
+              <div className="w-[240px] h-[180px] grainy-bg p-6 relative rounded-[32px]">
+                <div className="text-sm font-semibold tracking-wider uppercase absolute top-6 left-6">
+                  DAYS
+                </div>
+                <div 
+                  className="text-[120px] font-normal absolute top-2 right-6"
+                  style={{ letterSpacing: '-5%' }}
+                >
+                  {String(timeLeft.days).padStart(2, '0')}
+                </div>
               </div>
-              
+
+              {/* Hours */}
+              <div className="w-[240px] h-[180px] grainy-bg p-6 relative rounded-[32px]">
+                <div className="text-sm font-semibold tracking-wider uppercase absolute top-6 left-6">
+                  HOURS
+                </div>
+                <div 
+                  className="text-[120px] font-normal absolute top-2 right-6"
+                  style={{ letterSpacing: '-5%' }}
+                >
+                  {String(timeLeft.hours).padStart(2, '0')}
+                </div>
+              </div>
+
+              {/* Minutes */}
+              <div className="w-[240px] h-[180px] grainy-bg p-6 relative rounded-[32px]">
+                <div className="text-sm font-semibold tracking-wider uppercase absolute top-6 left-6">
+                  MINS
+                </div>
+                <div 
+                  className="text-[120px] font-normal absolute top-2 right-6"
+                  style={{ letterSpacing: '-5%' }}
+                >
+                  {String(timeLeft.minutes).padStart(2, '0')}
+                </div>
+              </div>
+
+              {/* Seconds */}
+              <div className="w-[240px] h-[180px] grainy-bg p-6 relative rounded-[32px]">
+                <div className="text-sm font-semibold tracking-wider uppercase absolute top-6 left-6">
+                  SECS
+                </div>
+                <div 
+                  className="text-[120px] font-normal absolute top-2 right-6"
+                  style={{ letterSpacing: '-5%' }}
+                >
+                  {String(timeLeft.seconds).padStart(2, '0')}
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Countdown - 2x2 grid reaching viewport edges */}
+            <div className="md:hidden countdown-container-mobile">
+              <div className="grid grid-cols-2 gap-2 mb-2">
+                {/* Days */}
+                <div className="h-[132px] grainy-bg p-4 relative rounded-[20px]">
+                <div className="text-xs font-semibold tracking-wider uppercase absolute top-3 left-4">
+                  DAYS
+                </div>
+                <div 
+                  className="text-[72px] font-normal absolute bottom-[-12px] right-4"
+                  style={{ letterSpacing: '-5%' }}
+                >
+                  {String(timeLeft.days).padStart(2, '0')}
+                </div>
+              </div>
+
+              {/* Hours */}
+              <div className="h-[132px] grainy-bg p-4 relative rounded-[20px]">
+                <div className="text-xs font-semibold tracking-wider uppercase absolute top-3 left-4">
+                  HOURS
+                </div>
+                <div 
+                  className="text-[72px] font-normal absolute bottom-[-12px] right-4"
+                  style={{ letterSpacing: '-5%' }}
+                >
+                  {String(timeLeft.hours).padStart(2, '0')}
+                </div>
+              </div>
+
+              {/* Minutes */}
+              <div className="h-[132px] grainy-bg p-4 relative rounded-[20px]">
+                <div className="text-xs font-semibold tracking-wider uppercase absolute top-3 left-4">
+                  MINS
+                </div>
+                <div 
+                  className="text-[72px] font-normal absolute bottom-[-12px] right-4"
+                  style={{ letterSpacing: '-5%' }}
+                >
+                  {String(timeLeft.minutes).padStart(2, '0')}
+                </div>
+              </div>
+
+              {/* Seconds */}
+              <div className="h-[132px] grainy-bg p-4 relative rounded-[20px]">
+                <div className="text-xs font-semibold tracking-wider uppercase absolute top-3 left-4">
+                  SECS
+                </div>
+                <div 
+                  className="text-[72px] font-normal absolute bottom-[-12px] right-4"
+                  style={{ letterSpacing: '-5%' }}
+                >
+                  {String(timeLeft.seconds).padStart(2, '0')}
+                </div>
+                </div>
+              </div>
+            </div>
+
+            {/* JOIN THE VANGUARD Button */}
+            <button 
+              className="btn-join-vanguard"
+              onClick={() => setShowNewsletterModal(true)}
+            >
+              JOIN THE VANGUARD
+            </button>
+          </div>
+        </section>
+
+        {/* Main Content Section 1 - Fixed height desktop, compact mobile */}
+        <div style={{ marginTop: '40px' }} className="md:mt-[160px] mt-5">
+          <section className="h-[460px] md:h-[460px] mobile-section bg-[#F3F3F3] rounded-[20px] md:rounded-[32px] grainy-bg mobile-padding relative">
+            {/* Eyebrow - top aligned */}
+            <div className="absolute top-8 left-8 md:top-8 md:left-8">
+              <p className="text-m md:text-xl text-sm font-semibold leading-7 tracking-wider uppercase">
+                WHY A VIBE CODING AWARD
+              </p>
+            </div>
+
+            {/* Main text - bottom aligned on desktop, with gap on mobile */}
+            <div className="absolute bottom-8 left-8 right-8 md:absolute md:bottom-8 md:left-8 md:right-8 static mobile-eyebrow-gap">
+              <p className="text-responsive-large font-normal">
+                That 2 AM idea brought to life with Lovable. The interface built not from a spec, but from a conversation. Your best work isn't on a roadmap. It's born from your dialogue with AI.
+              </p>
+            </div>
+          </section>
+        </div>
+
+        {/* Category Cards Section - 4 columns desktop, 460px height */}
+        <section className="space-y-4">
+                      {/* Desktop - 4 columns */}
+            <div className="hidden md:grid grid-cols-4 gap-4">
+              {/* WEBSITES */}
+              <div className="min-h-[460px] md:min-h-[460px] mobile-section bg-[#F3F3F3] rounded-[32px] grainy-bg p-8 md:p-8 p-5 relative">
+                <div className="absolute top-8 left-8 md:top-8 md:left-8 top-5 left-5">
+                  <span className="bg-black text-white px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider">
+                    CATEGORY 1
+                  </span>
+                </div>
+                <h3 className="text-[60px] md:text-[60px] text-[32px] leading-[72px] md:leading-[72px] leading-[36px] font-bold absolute md:absolute static mobile-category-gap" style={{top: '120px', left: '32px'}}>WEBSITES</h3>
+                <p className="text-xl md:text-xl text-base leading-8 md:leading-8 leading-6 font-normal absolute bottom-8 left-8 right-8 md:absolute md:bottom-8 md:left-8 md:right-8 static mobile-eyebrow-gap">
+                  For beautifully crafted websites, interactive landing pages, online portfolios, and any web-based project where design and user experience are central.
+                </p>
+              </div>
+
+                          {/* APPS */}
+              <div className="h-[460px] md:h-[460px] mobile-section bg-[#F3F3F3] rounded-[32px] grainy-bg p-8 md:p-8 p-5 relative">
+                <div className="absolute top-8 left-8 md:top-8 md:left-8 top-5 left-5">
+                  <span className="bg-black text-white px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider">
+                    CATEGORY 2
+                  </span>
+                </div>
+                <h3 className="text-[60px] md:text-[60px] text-[32px] leading-[72px] md:leading-[72px] leading-[36px] font-bold absolute md:absolute static mobile-category-gap" style={{top: '120px', left: '32px'}}>APPS</h3>
+                <p className="text-xl md:text-xl text-base leading-8 md:leading-8 leading-6 font-normal absolute bottom-8 left-8 right-8 md:absolute md:bottom-8 md:left-8 md:right-8 static mobile-eyebrow-gap">
+                  For mobile, desktop, or web applications designed to solve a problem, increase productivity, or offer a unique service. This includes tools, plugins, and SaaS products.
+                </p>
+              </div>
+
+                          {/* GAMES */}
+              <div className="h-[460px] md:h-[460px] mobile-section bg-[#F3F3F3] rounded-[32px] grainy-bg p-8 md:p-8 p-5 relative">
+                <div className="absolute top-8 left-8 md:top-8 md:left-8 top-5 left-5">
+                  <span className="bg-black text-white px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider">
+                    CATEGORY 3
+                  </span>
+                </div>
+                <h3 className="text-[60px] md:text-[60px] text-[32px] leading-[72px] md:leading-[72px] leading-[36px] font-bold absolute md:absolute static mobile-category-gap" style={{top: '120px', left: '32px'}}>GAMES</h3>
+                <p className="text-xl md:text-xl text-base leading-8 md:leading-8 leading-6 font-normal absolute bottom-8 left-8 right-8 md:absolute md:bottom-8 md:left-8 md:right-8 static mobile-eyebrow-gap">
+                  For games of any genre and platform, from simple web-based puzzles to more complex immersive worlds.
+                </p>
+              </div>
+
+                          {/* X */}
+              <div className="h-[460px] md:h-[460px] mobile-section bg-[#F3F3F3] rounded-[32px] grainy-bg p-8 md:p-8 p-5 relative">
+                <div className="absolute top-8 left-8 md:top-8 md:left-8 top-5 left-5">
+                  <span className="bg-black text-white px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider">
+                    CATEGORY 4
+                  </span>
+                </div>
+                <h3 
+                  className="text-[60px] md:text-[60px] text-[32px] leading-[72px] md:leading-[72px] leading-[36px] font-bold absolute md:absolute static mobile-category-gap"
+                  style={{
+                    top: '120px', 
+                    left: '32px',
+                    WebkitTextStroke: '1px black',
+                    WebkitTextFillColor: '#B8FF3D'
+                  }}
+                >
+                  X
+                </h3>
+                <p className="text-xl md:text-xl text-base leading-8 md:leading-8 leading-6 font-normal absolute bottom-8 left-8 right-8 md:absolute md:bottom-8 md:left-8 md:right-8 static mobile-eyebrow-gap">
+                  If your project defies easy categorization—from generative art and AI experiments to hardware integrations—this is its home. Surprise us.
+                </p>
+              </div>
+          </div>
+
+          {/* Mobile - Horizontal scroll */}
+          <div className="md:hidden flex gap-4 overflow-x-auto pb-4">
+            <div className="w-[300px] mobile-section bg-[#F3F3F3] rounded-[20px] grainy-bg mobile-padding flex-shrink-0">
               <div className="mb-4">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Email *
-                </label>
+                <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                  CATEGORY 1
+                </span>
+              </div>
+              <h3 className="text-[32px] leading-[36px] font-bold mb-4 mobile-category-gap" style={{letterSpacing: '-2%'}}>WEBSITES</h3>
+              <p className="text-base leading-6 font-normal mobile-eyebrow-gap">
+                For beautifully crafted websites, interactive landing pages, online portfolios, and any web-based project where design and user experience are central.
+              </p>
+            </div>
+            <div className="w-[300px] mobile-section bg-[#F3F3F3] rounded-[20px] grainy-bg mobile-padding flex-shrink-0">
+              <div className="mb-4">
+                <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                  CATEGORY 2
+                </span>
+              </div>
+              <h3 className="text-[32px] leading-[36px] font-bold mb-4 mobile-category-gap" style={{letterSpacing: '-2%'}}>APPS</h3>
+              <p className="text-base leading-6 font-normal mobile-eyebrow-gap">
+                For mobile, desktop, or web applications designed to solve a problem, increase productivity, or offer a unique service. This includes tools, plugins, and SaaS products.
+              </p>
+            </div>
+            <div className="w-[300px] mobile-section bg-[#F3F3F3] rounded-[20px] grainy-bg mobile-padding flex-shrink-0">
+              <div className="mb-4">
+                <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                  CATEGORY 3
+                </span>
+              </div>
+              <h3 className="text-[32px] leading-[36px] font-bold mb-4 mobile-category-gap" style={{letterSpacing: '-2%'}}>GAMES</h3>
+              <p className="text-base leading-6 font-normal mobile-eyebrow-gap">
+                For games of any genre and platform, from simple web-based puzzles to more complex immersive worlds.
+              </p>
+            </div>
+            <div className="w-[300px] mobile-section bg-[#F3F3F3] rounded-[20px] grainy-bg mobile-padding flex-shrink-0">
+              <div className="mb-4">
+                <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                  CATEGORY 4
+                </span>
+              </div>
+              <h3 
+                className="text-[32px] leading-[36px] font-bold mb-4 mobile-category-gap"
+                style={{
+                  WebkitTextStroke: '1px black',
+                  WebkitTextFillColor: '#B8FF3D',
+                  letterSpacing: '-2%'
+                }}
+              >
+                X
+              </h3>
+              <p className="text-base leading-6 font-normal mobile-eyebrow-gap">
+                If your project defies easy categorization—from generative art and AI experiments to hardware integrations—this is its home. Surprise us.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Spline 3D Scene */}
+        <section className="h-[400px] md:h-[500px] mobile-spline rounded-[32px] md:rounded-[32px] rounded-[20px] overflow-hidden">
+          <spline-viewer 
+            url="https://prod.spline.design/573Wj58x9dEfxJGw/scene.splinecode"
+            className="w-full h-full"
+          >
+            <img 
+              src="data:data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAANCAYAAADISGwcAAAG1ElEQVR4AQCBAH7/ALX6KRe1+ikTtfopDLX6KQK1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopAbX6KQ61+ikZtfopIrX6KSe1+ikntfopIrX6KRm1+ikOtfopAbX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikCtfopDLX6KRO1+ikXAIEAfv8AtfopDbX6KQm1+ikCtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikBtfopDrX6KRq1+ikjtfopKLX6KSi1+ikjtfopGrX6KQ61+ikBtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikBtfopCLX6KQwAgQB+/wC1+ikCtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQe1+ikWtfopI7X6KS21+ikztfopM7X6KS21+ikjtfopFrX6KQe1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopAACBAH7/ALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikKtfopG7X6KSy1+ik7tfopRrX6KUy1+ilMtfopRrX6KTu1+ikstfopG7X6KQq1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAAIEAfv8AtfopCbX6KQe1+ikCtfopALX6KQC1+ikAtfopALX6KQC1+ikGtfopFLX6KSa1+ik5tfopTLX6KVy1+ilotfopb7X6KXC1+ilqtfopXrX6KU61+ik7tfopKLX6KRe1+ikItfopALX6KQC1+ikAtfopALX6KQC1+ikBtfopBbX6KQcAgQB+/wC1+ikWtfopE7X6KRC1+ikLtfopCLX6KQe1+ikJtfopELX6KRy1+ikstfopP7X6KVS1+ilotfoperX6KYe1+imPtfopj7X6KYm1+il9tfopbLX6KVm1+ilFtfopMrX6KSK1+ikVtfopDrX6KQu1+ikLtfopDrX6KRG1+ikVtfopFwCBAH7/ALX6KRm1+ikXtfopFLX6KQ+1+ikMtfopDLX6KQ+1+ikWtfopIrX6KTO1+ilHtfopXLX6KXG1+imEtfopkbX6KZm1+imatfoplbX6KYm1+il4tfopZLX6KVC1+ik9tfopLLX6KR+1+ikXtfopFLX6KRO1+ikWtfopGbX6KRy1+ikeAIEAfv8AtfopELX6KQ21+ikJtfopBbX6KQG1+ikAtfopArX6KQi1+ikUtfopJLX6KTe1+ilMtfopYbX6KXO1+imBtfopibX6KYq1+imFtfoperX6KWq1+ilXtfopQ7X6KTG1+ikhtfopFbX6KQ61+ikLtfopC7X6KQ61+ikRtfopFbX6KRcAgQB+/wC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikHtfopGbX6KSy1+ik/tfopUbX6KV61+ilmtfopZ7X6KWO1+ilYtfopSrX6KTi1+ikmtfopFbX6KQi1+ikAtfopALX6KQC1+ikAtfopALX6KQG1+ikFtfopBwCBAH7/ALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopDLX6KR61+ikttfopOrX6KUG1+ilDtfopP7X6KTW1+ikotfopGbX6KQm1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAAIEAfv8AtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopCbX6KRi1+ikjtfopKbX6KSu1+ikntfopH7X6KRO1+ikFtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQAAgQB+/wC1+ikRtfopDbX6KQW1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikEtfopEbX6KRu1+ikhtfopI7X6KR+1+ikYtfopDbX6KQG1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQG1+ikItfopDAGBAH7/ALX6KSC1+ikbtfopE7X6KQe1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQa1+ikStfopG7X6KSG1+ikjtfopH7X6KRi1+ikOtfopA7X6KQC1+ikAtfopALX6KQC1+ikAtfopALX6KQC1+ikDtfopDLX6KRO1+ikX2iImb/CtKlcAAAAASUVORK5CYII=" 
+              alt="Spline preview" 
+              style={{width: '100%', height: '100%'}}
+            />
+          </spline-viewer>
+        </section>
+
+        {/* Two Column Section */}
+        <section className="space-y-4 md:space-y-0">
+          <div className="md:grid grid-cols-2 gap-4 space-y-4 md:space-y-0">
+            {/* Be the First to Submit */}
+            <div className="h-[460px] md:h-[460px] mobile-two-column bg-[#F3F3F3] rounded-[20px] md:rounded-[32px] grainy-bg mobile-padding relative">
+
+              {/* Bottom content - left aligned, bottom aligned */}
+              <div className="bottom-2 left-2 md:absolute md:bottom-8 md:left-8">
+                <h3 className="text-responsive-large font-bold uppercase mb-4" style={{color: 'black'}}>
+                  BE THE FIRST<br />TO SUBMIT
+                </h3>
+                <button 
+                  className="btn-join-vanguard"
+                  onClick={() => setShowProjectModal(true)}
+                >
+                  JOIN THE VANGUARD
+                </button>
+              </div>
+            </div>
+
+                          {/* Who Decides What's Next */}
+              <div className="h-[460px] md:h-[460px] mobile-two-column bg-[#F3F3F3] rounded-[20px] md:rounded-[32px] grainy-bg mobile-padding relative">
+                
+                {/* Bottom content - right aligned on mobile, left aligned on desktop */}
+                <div className="absolute bottom-2 right-2 md:absolute md:bottom-8 md:left-8 text-right md:text-left">
+                  <h3 className="text-responsive-large font-bold uppercase mb-4 text-color-black">
+                    WHO DECIDES<br />WHAT'S NEXT
+                  </h3>
+                  <button 
+                    className="btn-inquire-judging"
+                    onClick={() => window.open('mailto:judges@vibecodingaward.com', '_blank')}
+                  >
+                    INQUIRE ABOUT JUDGING
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 ml-2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+          </div>
+        </section>
+
+        {/* Main Content Section 3 - Single row, 460px height */}
+        <section className="h-[460px] md:h-[460px] mobile-section bg-[#F3F3F3] rounded-[20px] md:rounded-[32px] grainy-bg mobile-padding relative">
+          {/* Eyebrow - top aligned */}
+          <div className="absolute top-8 left-8 md:top-8 md:left-8">
+            <p className="text-m md:text-xl text-sm font-semibold leading-7 tracking-wider uppercase">
+              THE NEXT CHAPTER OF CRAFT
+            </p>
+          </div>
+          
+          {/* Main text - bottom aligned on desktop, with gap on mobile */}
+          <div className="absolute bottom-8 left-8 right-8 md:absolute md:bottom-8 md:left-8 md:right-8 static mobile-eyebrow-gap">
+            <p className="text-responsive-large font-normal">
+              We are here to provide a stage for this new craft, to study its patterns, and to celebrate the remarkable work born from the synergy between human vision and machine intelligence.
+            </p>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="pb-16">
+          {/* Button Links */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <button className="btn-footer" onClick={openLinkedIn}>
+              LINKEDIN
+            </button>
+            <button className="btn-footer" onClick={openPartnership}>
+              PARTNERSHIP/INDUSTRY
+            </button>
+            <button className="btn-footer" onClick={openContact}>
+              CONTACT US
+            </button>
+          </div>
+
+          {/* Logo and Copyright */}
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <img
+              src="/Vibe Coding Award Logo.svg"
+              alt="Vibe Coding Award"
+              className="h-16 w-auto mb-4 md:mb-0"
+            />
+            <p className="text-sm font-semibold tracking-wider uppercase">
+              @2025 ALL RIGHTS RESERVED
+            </p>
+          </div>
+        </footer>
+
+      </div>
+
+      {/* Newsletter Modal */}
+      {showNewsletterModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Join the Vanguard</h2>
+            <p className="text-gray-600 mb-6">
+              Be the first to know about submissions, voting, and winners.
+            </p>
+            
+            <form onSubmit={handleNewsletterSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Email *</label>
                 <input
                   type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 text-black"
                   required
-                />
-              </div>
-
-              <div className="mb-6">
-                <label htmlFor="profession" className="block text-sm font-medium text-gray-700 mb-2">
-                  Role (optional)
-                </label>
-                <input
-                  type="text"
-                  id="profession"
-                  value={profession}
-                  onChange={(e) => setProfession(e.target.value)}
-                  placeholder="e.g., designer, developer, dreamer..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 text-black"
+                  value={newsletterForm.email}
+                  onChange={(e) => setNewsletterForm({...newsletterForm, email: e.target.value})}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="your@email.com"
                 />
               </div>
               
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-black text-white py-3 rounded-md font-semibold transition-colors disabled:opacity-50"
+              <div>
+                <label className="block text-sm font-medium mb-2">Name</label>
+                <input
+                  type="text"
+                  value={newsletterForm.name}
+                  onChange={(e) => setNewsletterForm({...newsletterForm, name: e.target.value})}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Your name"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Role</label>
+                <select
+                  value={newsletterForm.profession}
+                  onChange={(e) => setNewsletterForm({...newsletterForm, profession: e.target.value})}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                {isSubmitting ? 'Joining...' : 'Join the Vanguard'}
-              </button>
+                  <option value="">Select your role</option>
+                  <option value="developer">Developer</option>
+                  <option value="designer">Designer</option>
+                  <option value="founder">Founder</option>
+                  <option value="student">Student</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              
+              <div className="flex items-start">
+                <input
+                  type="checkbox"
+                  required
+                  checked={newsletterForm.consent}
+                  onChange={(e) => setNewsletterForm({...newsletterForm, consent: e.target.checked})}
+                  className="mt-1 mr-3"
+                />
+                <label className="text-sm text-gray-600">
+                  I agree to receive updates about the Vibe Coding Award and understand I can unsubscribe at any time.
+                </label>
+              </div>
+              
+              {submitMessage && (
+                <div className={`p-3 rounded ${submitMessage.includes('Success') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  {submitMessage}
+                </div>
+              )}
+              
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowNewsletterModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1 px-4 py-2 bg-[#B8FF3D] text-black border border-black rounded-lg hover:bg-black hover:text-[#B8FF3D] disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Subscribing...' : 'Subscribe'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Project Submission Modal */}
+      {showProjectModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Submit Your Project</h2>
+            <p className="text-gray-600 mb-6">
+              Share your AI-assisted creation with the community.
+            </p>
+            
+            {/* Step Indicator */}
+            <div className="flex mb-6">
+              {[1, 2, 3, 4].map((step) => (
+                <div
+                  key={step}
+                  className={`flex-1 h-2 mx-1 rounded ${
+                    step <= currentStep ? 'bg-[#B8FF3D]' : 'bg-gray-200'
+                  }`}
+                />
+              ))}
+            </div>
+            
+            <form onSubmit={handleProjectSubmit} className="space-y-4">
+              {currentStep === 1 && (
+                <>
+                  <h3 className="text-lg font-semibold mb-4">Step 1: Project Basics</h3>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Project Title *</label>
+                    <input
+                      type="text"
+                      required
+                      value={projectForm.title}
+                      onChange={(e) => setProjectForm({...projectForm, title: e.target.value})}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Your amazing project name"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Description *</label>
+                    <textarea
+                      required
+                      rows={3}
+                      value={projectForm.description}
+                      onChange={(e) => setProjectForm({...projectForm, description: e.target.value})}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Brief description of your project..."
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Category</label>
+                    <select
+                      value={projectForm.category}
+                      onChange={(e) => setProjectForm({...projectForm, category: e.target.value})}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Select category</option>
+                      <option value="WEB_APP">Web App</option>
+                      <option value="MOBILE_APP">Mobile App</option>
+                      <option value="DESKTOP_APP">Desktop App</option>
+                      <option value="GAME">Game</option>
+                      <option value="TOOL_UTILITY">Tool/Utility</option>
+                      <option value="AI_ML">AI/ML</option>
+                      <option value="CREATIVE">Creative</option>
+                      <option value="OTHER">Other</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Your Email *</label>
+                    <input
+                      type="email"
+                      required
+                      value={projectForm.email}
+                      onChange={(e) => setProjectForm({...projectForm, email: e.target.value})}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="your@email.com"
+                    />
+                  </div>
+                </>
+              )}
+
+              {currentStep === 2 && (
+                <>
+                  <h3 className="text-lg font-semibold mb-4">Step 2: Project Links</h3>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Demo URL</label>
+                    <input
+                      type="url"
+                      value={projectForm.demoUrl}
+                      onChange={(e) => setProjectForm({...projectForm, demoUrl: e.target.value})}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="https://your-demo.com"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Repository URL</label>
+                    <input
+                      type="url"
+                      value={projectForm.repoUrl}
+                      onChange={(e) => setProjectForm({...projectForm, repoUrl: e.target.value})}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="https://github.com/username/repo"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Video URL</label>
+                    <input
+                      type="url"
+                      value={projectForm.videoUrl}
+                      onChange={(e) => setProjectForm({...projectForm, videoUrl: e.target.value})}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="https://youtube.com/watch?v=..."
+                    />
+                  </div>
+                </>
+              )}
+
+              {currentStep === 3 && (
+                <>
+                  <h3 className="text-lg font-semibold mb-4">Step 3: The Vibe Story</h3>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Vibe Narrative *</label>
+                    <textarea
+                      required
+                      rows={6}
+                      value={projectForm.vibeNarrative}
+                      onChange={(e) => setProjectForm({...projectForm, vibeNarrative: e.target.value})}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Tell us about your journey building this with AI. What was the vibe? How did you collaborate with AI tools? What surprised you?"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">AI Tools Used</label>
+                    <input
+                      type="text"
+                      value={projectForm.customAiTool}
+                      onChange={(e) => setProjectForm({...projectForm, customAiTool: e.target.value})}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Claude, ChatGPT, Cursor, Lovable, etc."
+                    />
+                  </div>
+                </>
+              )}
+
+              {currentStep === 4 && (
+                <>
+                  <h3 className="text-lg font-semibold mb-4">Step 4: Team & Reflection</h3>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Team Member Name</label>
+                    <input
+                      type="text"
+                      value={projectForm.teamMembers[0]?.name || ''}
+                      onChange={(e) => setProjectForm({
+                        ...projectForm, 
+                        teamMembers: [{ ...projectForm.teamMembers[0], name: e.target.value }]
+                      })}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Your name"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Role</label>
+                    <input
+                      type="text"
+                      value={projectForm.teamMembers[0]?.role || ''}
+                      onChange={(e) => setProjectForm({
+                        ...projectForm, 
+                        teamMembers: [{ ...projectForm.teamMembers[0], role: e.target.value }]
+                      })}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Developer, Designer, etc."
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Key Learnings</label>
+                    <textarea
+                      rows={3}
+                      value={projectForm.learnings}
+                      onChange={(e) => setProjectForm({...projectForm, learnings: e.target.value})}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="What did you learn from this AI collaboration?"
+                    />
+                  </div>
+                </>
+              )}
+              
+              {submitMessage && (
+                <div className={`p-3 rounded ${submitMessage.includes('Success') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  {submitMessage}
+                </div>
+              )}
+              
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowProjectModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                
+                {currentStep > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(currentStep - 1)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  >
+                    Previous
+                  </button>
+                )}
+                
+                {currentStep < 4 ? (
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(currentStep + 1)}
+                    className="px-4 py-2 bg-[#B8FF3D] text-black border border-black rounded-lg hover:bg-black hover:text-[#B8FF3D]"
+                  >
+                    Next
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="px-4 py-2 bg-[#B8FF3D] text-black border border-black rounded-lg hover:bg-black hover:text-[#B8FF3D] disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Submitting...' : 'Submit Project'}
+                  </button>
+                )}
+              </div>
             </form>
           </div>
         </div>
       )}
     </div>
-  );
-}
-
-export default function HomePageWithToast() {
-  return (
-    <ToastProvider>
-      <HomePage />
-    </ToastProvider>
   );
 } 

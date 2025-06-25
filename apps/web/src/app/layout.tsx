@@ -4,11 +4,11 @@ import "../styles/globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://vibecodingaward.com"),
-  title: "Vibe Coding Award - Championing the Pioneers of Human-AI Collaboration",
+  title: "Vibe Coding Award - The Stage for AI-Native Creation",
   description: "The premier independent award recognizing the innovators and artisans building the future with AI. Discover groundbreaking projects and join the movement.",
   keywords: "Vibe Coding, AI, Artificial Intelligence, Developer Awards, Creative Coding, Human-AI Collaboration, Future of Code",
   openGraph: {
-    title: "Vibe Coding Award - Championing the Pioneers of Human-AI Collaboration",
+    title: "Vibe Coding Award - The Stage for AI-Native Creation",
     description: "The premier independent award recognizing the innovators and artisans building the future with AI. Discover groundbreaking projects and join the movement.",
     url: "https://vibecodingaward.com",
     siteName: "Vibe Coding Award",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Vibe Coding Award - Championing the Pioneers of Human-AI Collaboration",
+        alt: "Vibe Coding Award - The Stage for AI-Native Creation",
       },
     ],
     locale: "en_US",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vibe Coding Award - Championing the Pioneers of Human-AI Collaboration",
+    title: "Vibe Coding Award - The Stage for AI-Native Creation",
     description: "The premier independent award recognizing the innovators and artisans building the future with AI.",
     images: ["/og-image.png"],
   },
@@ -55,12 +55,12 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link 
           rel="preload" 
-          href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&display=swap" 
+          href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" 
           as="style"
         />
         <link 
           rel="stylesheet" 
-          href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap"
         />
         
         {/* Google Analytics */}
@@ -76,11 +76,18 @@ export default function RootLayout({
             gtag('config', 'G-HVL9L65086');
           `}
         </Script>
+        
+        {/* Spline Viewer */}
+        <Script
+          type="module"
+          src="https://unpkg.com/@splinetool/viewer@1.10.13/build/spline-viewer.js"
+          strategy="afterInteractive"
+        />
 
         <link rel="canonical" href="https://vibecodingaward.com" />
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#000000" />
+        <meta name="theme-color" content="#FFFFFF" />
       </head>
       <body className="font-barlow">
         {children}
