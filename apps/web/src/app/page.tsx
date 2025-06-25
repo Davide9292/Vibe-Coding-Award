@@ -1,6 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { TextPlugin } from 'gsap/TextPlugin';
+
+// Register GSAP plugins
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger, TextPlugin);
+}
 
 // TypeScript declaration for spline-viewer web component
 declare global {
@@ -98,6 +106,16 @@ export default function HomePage() {
   const [submitMessage, setSubmitMessage] = useState('');
   const [currentStep, setCurrentStep] = useState(1);
 
+  // Refs for typing animation
+  const section1Ref = useRef<HTMLDivElement>(null);
+  const section2Ref = useRef<HTMLDivElement>(null);
+  const typingText1Ref = useRef<HTMLParagraphElement>(null);
+  const typingText2Ref = useRef<HTMLParagraphElement>(null);
+
+  // Original text content for typing animation
+  const originalText1 = "That 2 AM idea brought to life with Lovable. The interface built not from a spec, but from a conversation. Your best work isn't on a roadmap. It's born from your dialogue with AI.";
+  const originalText2 = "We are here to provide a stage for this new craft, to study its patterns, and to celebrate the remarkable work born from the synergy between human vision and machine intelligence.";
+
   const [newsletterForm, setNewsletterForm] = useState<NewsletterFormData>({
     email: '',
     name: '',
@@ -149,6 +167,52 @@ export default function HomePage() {
 
     return () => clearInterval(timer);
   }, []);
+
+  // GSAP Typing Animation Effect
+  useEffect(() => {
+    if (!mounted) return;
+
+    const setupTypingAnimation = (textRef: React.RefObject<HTMLParagraphElement>, sectionRef: React.RefObject<HTMLDivElement>, originalText: string) => {
+      if (!textRef.current || !sectionRef.current) return;
+
+      // Start with empty text
+      textRef.current.textContent = '';
+
+      // Create the typing animation
+      gsap.to(textRef.current, {
+        text: {
+          value: originalText
+        },
+        duration: 3, // Duration of typing animation
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          pin: sectionRef.current,
+          start: "center center",
+          end: "center top",
+          scrub: true,
+          markers: true, // Remove in production
+          onUpdate: (self) => {
+            // Optional: Add cursor effect during typing
+            if (self.progress < 1) {
+              textRef.current!.style.borderRight = '2px solid black';
+            } else {
+              textRef.current!.style.borderRight = 'none';
+            }
+          }
+        }
+      });
+    };
+
+    // Setup animations for both sections
+    setupTypingAnimation(typingText1Ref, section1Ref, originalText1);
+    setupTypingAnimation(typingText2Ref, section2Ref, originalText2);
+
+    // Cleanup on unmount
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, [mounted, originalText1, originalText2]);
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -389,9 +453,12 @@ export default function HomePage() {
 
         {/* Main Content Section 1 - Fixed height desktop, compact mobile */}
         <div style={{ marginTop: '40px' }} className="md:mt-[160px] mt-5">
-          <section className="h-[460px] md:h-[460px] mobile-section bg-[#F3F3F3] rounded-[20px] md:rounded-[32px] grainy-bg mobile-padding relative">
+          <section 
+            ref={section1Ref}
+            className="h-[460px] md:h-[460px] mobile-section bg-[#F3F3F3] rounded-[20px] md:rounded-[32px] grainy-bg mobile-padding relative section-typing_text"
+          >
             {/* Eyebrow - top aligned */}
-            <div className="absolute top-8 left-8 md:top-8 md:left-8">
+            <div className="absolute top-8 left-8 md:top-8 md:left-8 typing_text-heading">
               <p className="text-m md:text-xl text-sm font-semibold leading-7 tracking-wider uppercase">
                 WHY A VIBE CODING AWARD
               </p>
@@ -399,8 +466,11 @@ export default function HomePage() {
 
             {/* Main text - bottom aligned on desktop, with gap on mobile */}
             <div className="absolute bottom-8 left-8 right-8 md:absolute md:bottom-8 md:left-8 md:right-8 static mobile-eyebrow-gap">
-              <p className="text-responsive-large font-normal">
-                That 2 AM idea brought to life with Lovable. The interface built not from a spec, but from a conversation. Your best work isn't on a roadmap. It's born from your dialogue with AI.
+              <p 
+                ref={typingText1Ref}
+                className="text-responsive-large font-normal typing_text"
+              >
+                {/* Text will be animated via GSAP */}
               </p>
             </div>
           </section>
@@ -587,19 +657,25 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Main Content Section 3 - Single row, 460px height */}
-        <section className="h-[460px] md:h-[460px] mobile-section bg-[#F3F3F3] rounded-[20px] md:rounded-[32px] grainy-bg mobile-padding relative">
+                {/* Main Content Section 3 - Single row, 460px height */}
+        <section 
+          ref={section2Ref}
+          className="h-[460px] md:h-[460px] mobile-section bg-[#F3F3F3] rounded-[20px] md:rounded-[32px] grainy-bg mobile-padding relative section-typing_text"
+        >
           {/* Eyebrow - top aligned */}
-          <div className="absolute top-8 left-8 md:top-8 md:left-8">
+          <div className="absolute top-8 left-8 md:top-8 md:left-8 typing_text-heading">
             <p className="text-m md:text-xl text-sm font-semibold leading-7 tracking-wider uppercase">
               THE NEXT CHAPTER OF CRAFT
             </p>
           </div>
-          
+
           {/* Main text - bottom aligned on desktop, with gap on mobile */}
           <div className="absolute bottom-8 left-8 right-8 md:absolute md:bottom-8 md:left-8 md:right-8 static mobile-eyebrow-gap">
-            <p className="text-responsive-large font-normal">
-              We are here to provide a stage for this new craft, to study its patterns, and to celebrate the remarkable work born from the synergy between human vision and machine intelligence.
+            <p 
+              ref={typingText2Ref}
+              className="text-responsive-large font-normal typing_text"
+            >
+              {/* Text will be animated via GSAP */}
             </p>
           </div>
         </section>

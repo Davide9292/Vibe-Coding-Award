@@ -612,6 +612,17 @@ select:focus-visible {
   outline-offset: 2px;
 }
 
+/* Typing animation styles */
+.typing_text {
+  border-right: 2px solid transparent;
+  animation: blink-caret 1s infinite;
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: black; }
+}
+
 /* Custom scrollbar for modals */
 .overflow-y-auto::-webkit-scrollbar {
   width: 6px;
