@@ -113,7 +113,7 @@ export default function HomePage() {
   const typingText2Ref = useRef<HTMLParagraphElement>(null);
 
   // Original text content for typing animation
-  const originalText1 = "That 2 AM idea brought to life with Lovable. The interface built not from a spec, but from a conversation. Your best work isn't on a roadmap. It's born from your dialogue with AI.";
+  const originalText1 = "That 2 AM idea brought to life with Lovable. </br> The interface built not from a spec, but from a conversation. Your best work isn't on a roadmap. </br> It's born from your dialogue with AI.";
   const originalText2 = "We are here to provide a stage for this new craft, to study its patterns, and to celebrate the remarkable work born from the synergy between human vision and machine intelligence.";
 
   const [newsletterForm, setNewsletterForm] = useState<NewsletterFormData>({
@@ -189,9 +189,9 @@ export default function HomePage() {
           trigger: sectionRef.current,
           pin: sectionRef.current,
           start: "center center",
-          end: "center top",
+          end: "center -100px",
           scrub: true,
-          markers: true, // Remove in production
+          markers: false, // Remove in production
           onUpdate: (self) => {
             // Optional: Add cursor effect during typing
             if (self.progress < 1) {
@@ -318,7 +318,7 @@ export default function HomePage() {
             <img
               src="/Vibe Coding Award Logo.svg"
               alt="Vibe Coding Award"
-              className="h-[85px] w-auto"
+              className="h-[100px] w-auto"
             />
           </div>
 
@@ -460,7 +460,7 @@ export default function HomePage() {
             {/* Eyebrow - top aligned */}
             <div className="absolute top-8 left-8 md:top-8 md:left-8 typing_text-heading">
               <p className="text-m md:text-xl text-sm font-semibold leading-7 tracking-wider uppercase">
-                WHY A VIBE CODING AWARD
+                MANIFESTO
               </p>
             </div>
 

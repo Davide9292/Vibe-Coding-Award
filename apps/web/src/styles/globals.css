@@ -385,6 +385,19 @@
       padding: 20px 16px !important;
     }
     
+    /* Mobile typing sections need fixed height to contain animated text */
+    .section-typing_text.mobile-section {
+      height: 600px !important;
+      min-height: 600px !important;
+    }
+    
+    /* Mobile positioning for "WHO DECIDES WHAT'S NEXT" section */
+    .mobile-two-column .absolute.bottom-2.right-2 {
+      bottom: 20px !important;
+      right: 20px !important;
+      text-align: right !important;
+    }
+    
     /* Mobile spacing - 60px gap from eyebrow to content */
     .mobile-eyebrow-gap {
       margin-top: 60px !important;
@@ -420,7 +433,7 @@
     
     /* Mobile hero content positioning */
     .mobile-hero-content {
-      margin-top: 149px !important; /* 85px logo + 64px gap */
+      margin-top: 164px !important; /* 100px logo + 64px gap */
     }
     
     .mobile-hero-text {
