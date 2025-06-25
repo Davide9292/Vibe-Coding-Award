@@ -505,7 +505,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-[60px] md:text-[60px] text-[32px] leading-[72px] md:leading-[72px] leading-[36px] font-bold absolute md:absolute static mobile-category-gap" style={{top: '120px', left: '32px'}}>APPS</h3>
                 <p className="text-xl md:text-xl text-base leading-8 md:leading-8 leading-6 font-normal absolute bottom-8 left-8 right-8 md:absolute md:bottom-8 md:left-8 md:right-8 static mobile-eyebrow-gap">
-                  For applications that solve real problems—whether mobile, desktop, or web. From productivity tools to SaaS innovations, show us how AI helped you build something useful.
+                  For mobile, desktop, or web applications designed to solve a problem, increase productivity, or offer a unique service. This includes tools, plugins, and SaaS products.
                 </p>
               </div>
 
@@ -518,7 +518,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-[60px] md:text-[60px] text-[32px] leading-[72px] md:leading-[72px] leading-[36px] font-bold absolute md:absolute static mobile-category-gap" style={{top: '120px', left: '32px'}}>GAMES</h3>
                 <p className="text-xl md:text-xl text-base leading-8 md:leading-8 leading-6 font-normal absolute bottom-8 left-8 right-8 md:absolute md:bottom-8 md:left-8 md:right-8 static mobile-eyebrow-gap">
-                  For games that push creative boundaries. Whether it's a web-based puzzle, an immersive world, or an experimental interactive experience—show us how AI became your creative collaborator.
+                  For games of any genre and platform, from simple web-based puzzles to more complex immersive worlds.
                 </p>
               </div>
 
@@ -567,7 +567,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-[32px] leading-[36px] font-bold mb-4 mobile-category-gap" style={{letterSpacing: '-2%'}}>APPS</h3>
               <p className="text-base leading-6 font-normal mobile-eyebrow-gap">
-                                  For applications that solve real problems—whether mobile, desktop, or web. From productivity tools to SaaS innovations, show us how AI helped you build something useful.
+                                  For mobile, desktop, or web applications designed to solve a problem, increase productivity, or offer a unique service. This includes tools, plugins, and SaaS products.
               </p>
             </div>
             <div className="w-[300px] mobile-section bg-[#F3F3F3] rounded-[20px] grainy-bg mobile-padding flex-shrink-0">
@@ -578,7 +578,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-[32px] leading-[36px] font-bold mb-4 mobile-category-gap" style={{letterSpacing: '-2%'}}>GAMES</h3>
               <p className="text-base leading-6 font-normal mobile-eyebrow-gap">
-                                  For games that push creative boundaries. Whether it's a web-based puzzle, an immersive world, or an experimental interactive experience—show us how AI became your creative collaborator.
+                                  For games of any genre and platform, from simple web-based puzzles to more complex immersive worlds.
               </p>
             </div>
             <div className="w-[300px] mobile-section bg-[#F3F3F3] rounded-[20px] grainy-bg mobile-padding flex-shrink-0">

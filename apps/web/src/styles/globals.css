@@ -190,6 +190,10 @@
     color: white !important;
   }
   
+  .btn-inquire-judging:hover svg {
+    stroke: white !important;
+  }
+  
   .btn-footer {
     @apply px-6 py-4 bg-[#B8FF3D] text-black font-semibold text-lg uppercase tracking-wide rounded-32;
     @apply border border-black;
