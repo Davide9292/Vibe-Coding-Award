@@ -631,7 +631,7 @@ export default function HomePage() {
                 </h3>
                 <button 
                   className="btn-join-vanguard"
-                  onClick={() => setShowProjectModal(true)}
+                  onClick={() => setShowNewsletterModal(true)}
                 >
                   JOIN THE VANGUARD
                 </button>
@@ -756,6 +756,7 @@ export default function HomePage() {
                   <option value="">Select your role</option>
                   <option value="developer">Developer</option>
                   <option value="designer">Designer</option>
+                  <option value="dreamer">Dreamer</option>
                   <option value="founder">Founder</option>
                   <option value="student">Student</option>
                   <option value="other">Other</option>
@@ -977,7 +978,7 @@ export default function HomePage() {
                         teamMembers: [{ ...projectForm.teamMembers[0], role: e.target.value }]
                       })}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Developer, Designer, etc."
+                      placeholder="Developer, Designer, Dreamer etc."
                     />
                   </div>
                   
