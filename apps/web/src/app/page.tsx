@@ -178,6 +178,9 @@ export default function HomePage() {
       // Start with empty text
       textRef.current.textContent = '';
 
+      // Check if mobile
+      const isMobile = window.innerWidth <= 768;
+
       // Create the typing animation
       gsap.to(textRef.current, {
         text: {
@@ -188,8 +191,8 @@ export default function HomePage() {
         scrollTrigger: {
           trigger: sectionRef.current,
           pin: sectionRef.current,
-          start: "center center",
-          end: "center -100px",
+          start: isMobile ? "top 20px" : "center center", // Mobile: pin at 20px from top
+          end: isMobile ? "bottom 20px" : "center -100px",
           scrub: true,
           markers: false, // Remove in production
           onUpdate: (self) => {

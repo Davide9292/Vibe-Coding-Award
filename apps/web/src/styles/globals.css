@@ -392,10 +392,26 @@
     }
     
     /* Mobile positioning for "WHO DECIDES WHAT'S NEXT" section */
-    .mobile-two-column .absolute.bottom-2.right-2 {
-      bottom: 20px !important;
-      right: 20px !important;
-      text-align: right !important;
+    .mobile-two-column {
+      position: relative !important;
+    }
+    
+    .mobile-two-column .absolute {
+      position: absolute !important;
+    }
+    
+    @media (max-width: 768px) {
+      .mobile-two-column .absolute.bottom-2.right-2 {
+        position: absolute !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        left: auto !important;
+        top: auto !important;
+        text-align: right !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important;
+      }
     }
     
     /* Mobile spacing - 60px gap from eyebrow to content */
