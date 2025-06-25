@@ -329,7 +329,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center justify-center flex-1 mt-[135px] md:mt-[135px] mobile-hero-content">
             {/* Text below logo - 64px gap on mobile */}
             <p className="text-lg md:text-xl font-medium leading-7 mb-12 md:mb-12 mb-8 text-center text-color mobile-hero-text">
-              The Stage for AI-Native Creation opens in:
+              The stage opens for AI-native creation in:
             </p>
 
             {/* Countdown Timer - 240x180px boxes on desktop, 2x2 grid on mobile */}
