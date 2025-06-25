@@ -66,7 +66,7 @@ function SplineViewer() {
     // Load the Spline viewer script
     const script = document.createElement('script');
     script.type = 'module';
-    script.src = 'https://unpkg.com/@splinetool/viewer@1.10.13/build/spline-viewer.js';
+    script.src = 'https://unpkg.com/@splinetool/viewer@1.10.14/build/spline-viewer.js';
     script.async = true;
     document.head.appendChild(script);
 
@@ -84,7 +84,7 @@ function SplineViewer() {
       style={{ width: '100%', height: '100%' }}
     >
       <img 
-        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAANCAYAAADISGwcAAAG1ElEQVR4AQCBAH7/AE0pbxNNKW8PTSlvCU0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvBk0pbxJNKW8cTSlvJE0pbydNKW8mTSlvIE0pbxZNKW8KTSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ETSlvD00pbxdNKW8cAIEAfv8ATSlvCk0pbwZNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8GTSlvEk0pbx5NKW8lTSlvKU0pbyhNKW8hTSlvF00pbwpNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8DTSlvC00pbw8AgQB+/wBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbw1NKW8bTSlvJ00pbzBNKW80TSlvMk0pbytNKW8gTSlvEU0pbwFNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAACBAH7/AE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwJNKW8RTSlvIU0pbzFNKW8/TSlvSE0pb01NKW9LTSlvQ00pbzdNKW8nTSlvFU0pbwNNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8AAIEAfv8ATSlvDE0pbwpNKW8GTSlvAU0pbwBNKW8ATSlvAE0pbwRNKW8OTSlvHU0pby5NKW9ATSlvUk0pb2FNKW9rTSlvcE0pb29NKW9nTSlvWU0pb0hNKW80TSlvIE0pbw5NKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAk0pbwUAgQB+/wBNKW8aTSlvGE0pbxVNKW8RTSlvDk0pbw5NKW8STSlvGU0pbyVNKW81TSlvSE0pb1xNKW9vTSlvf00pb4pNKW+QTSlvjk0pb4ZNKW94TSlvZk0pb1FNKW88TSlvKE0pbxhNKW8MTSlvBk0pbwNNKW8ETSlvCE0pbwxNKW8QTSlvEwCBAH7/AE0pbx5NKW8cTSlvGU0pbxZNKW8TTSlvFE0pbxdNKW8fTSlvLE0pbz1NKW9QTSlvZE0pb3hNKW+JTSlvlU0pb5pNKW+ZTSlvkU0pb4RNKW9xTSlvXE0pb0dNKW8zTSlvIk0pbxZNKW8PTSlvDE0pbwxNKW8PTSlvFE0pbxdNKW8ZAIEAfv8ATSlvFE0pbxJNKW8OTSlvCk0pbwhNKW8HTSlvCk0pbxFNKW8dTSlvLU0pb0BNKW9UTSlvaE0pb3hNKW+ETSlvik0pb4lNKW+CTSlvdU0pb2NNKW9PTSlvOk0pbydNKW8YTSlvDE0pbwVNKW8DTSlvBE0pbwhNKW8NTSlvEE0pbxMAgQB+/wBNKW8DTSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwFNKW8QTSlvIU0pbzNNKW9GTSlvVU0pb2FNKW9nTSlvZk0pb2BNKW9UTSlvQ00pbzFNKW8eTSlvDU0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8CTSlvBQCBAH7/AE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8CTSlvE00pbyNNKW8yTSlvPE0pb0JNKW9CTSlvPE0pbzFNKW8jTSlvEk0pbwJNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8AAIEAfv8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvDk0pbxtNKW8lTSlvKk0pbypNKW8lTSlvG00pbw5NKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwAAgQB+/wBNKW8OTSlvCk0pbwJNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8JTSlvFE0pbx1NKW8iTSlvIk0pbx1NKW8UTSlvCU0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwRNKW8LTSlvDwGBAH7/AE0pbxxNKW8XTSlvD00pbwVNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwpNKW8VTSlvHU0pbyJNKW8iTSlvHU0pbxVNKW8KTSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8ATSlvAE0pbwBNKW8FTSlvD00pbxdNKW8c3habaHBN6GYAAAAASUVORK5CYII=" 
+        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAATCAYAAADxlA/3AAAJ+ElEQVR4AQCBAH7/AFB0FRBQdBUMUHQVBFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQ1QdBUZUHQVIlB0FSdQdBUnUHQVIlB0FRlQdBUNUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVBFB0FQxQdBUPAIEAfv8AUHQVDFB0FQhQdBUBUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUBUHQVDlB0FRpQdBUjUHQVKFB0FShQdBUjUHQVGlB0FQ5QdBUBUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUBUHQVCFB0FQwAgQB+/wBQdBUIUHQVBFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQNQdBUSUHQVHlB0FShQdBUtUHQVLVB0FShQdBUeUHQVEVB0FQNQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUCUHQVBgCBAH7/AFB0FQRQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVClB0FRlQdBUmUHQVMVB0FTZQdBU2UHQVMVB0FSZQdBUZUHQVClB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUBAIEAfv8AUHQVA1B0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQVQdBUVUHQVJVB0FTRQdBU+UHQVRFB0FURQdBU/UHQVNFB0FSZQdBUWUHQVBlB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQAAgQB+/wBQdBUGUHQVA1B0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUEUHQVFFB0FSVQdBU3UHQVRlB0FVFQdBVXUHQVWFB0FVJQdBVHUHQVOFB0FSZQdBUVUHQVBVB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUBUHQVAwCBAH7/AFB0FQ1QdBUKUHQVBlB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVBlB0FRRQdBUlUHQVN1B0FUpQdBVaUHQVZlB0FW1QdBVtUHQVZ1B0FVxQdBVMUHQVOlB0FSdQdBUWUHQVCFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVBFB0FQhQdBULAIEAfv8AUHQVFFB0FRJQdBUNUHQVCFB0FQRQdBUCUHQVA1B0FQlQdBUTUHQVIlB0FTRQdBVIUHQVW1B0FWxQdBV5UHQVgFB0FYFQdBV7UHQVb1B0FV9QdBVMUHQVOVB0FSdQdBUYUHQVDVB0FQdQdBUEUHQVBlB0FQlQdBUOUHQVElB0FRQAgQB+/wBQdBUZUHQVF1B0FRNQdBUOUHQVClB0FQhQdBUKUHQVEVB0FRxQdBUsUHQVPlB0FVNQdBVnUHQVeFB0FYVQdBWNUHQVjlB0FYhQdBV8UHQVbFB0FVlQdBVFUHQVM1B0FSNQdBUYUHQVEFB0FQ5QdBUOUHQVElB0FRVQdBUZUHQVGwCBAH7/AFB0FRlQdBUXUHQVE1B0FQ5QdBULUHQVCVB0FQtQdBUSUHQVHVB0FS1QdBVAUHQVVVB0FWlQdBV7UHQViVB0FZBQdBWRUHQVjFB0FYBQdBVwUHQVXVB0FUlQdBU3UHQVJ1B0FRtQdBUUUHQVEVB0FRJQdBUVUHQVGFB0FRxQdBUeAIEAfv8AUHQVFVB0FRJQdBUOUHQVCVB0FQVQdBUDUHQVBVB0FQtQdBUXUHQVJlB0FTlQdBVNUHQVYlB0FXNQdBWBUHQViVB0FYpQdBWFUHQVelB0FWpQdBVXUHQVRFB0FTJQdBUjUHQVF1B0FRBQdBUOUHQVDlB0FRJQdBUWUHQVGVB0FRsAgQB+/wBQdBUMUHQVClB0FQVQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQlQdBUYUHQVKlB0FT5QdBVSUHQVY1B0FXFQdBV5UHQVelB0FXVQdBVrUHQVW1B0FUpQdBU3UHQVJlB0FRdQdBUNUHQVBlB0FQRQdBUGUHQVCVB0FQ5QdBUSUHQVFACBAH7/AFB0FQRQdBUBUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQdQdBUXUHQVKlB0FT1QdBVOUHQVW1B0FWNQdBVlUHQVYFB0FVZQdBVIUHQVN1B0FSVQdBUVUHQVCFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVBFB0FQhQdBULAIEAfv8AUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQVQdBUXUHQVKVB0FTlQdBVFUHQVTVB0FU9QdBVKUHQVQVB0FTNQdBUjUHQVE1B0FQRQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAVB0FQMAgQB+/wBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQdQdBUYUHQVJ1B0FTNQdBU6UHQVPFB0FThQdBUvUHQVIlB0FRNQdBUEUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAACBAH7/AFB0FQJQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQ1QdBUbUHQVJlB0FS1QdBUuUHQVK1B0FSJQdBUWUHQVCVB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUBAIEAfv8AUHQVClB0FQZQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVB1B0FRRQdBUfUHQVJVB0FSdQdBUjUHQVG1B0FRBQdBUDUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVA1B0FQYAgQB+/wBQdBUTUHQVD1B0FQZQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUGUHQVElB0FRxQdBUiUHQVJFB0FSBQdBUZUHQVDlB0FQFQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQFQdBUIUHQVDAGBAH7/AFB0FRhQdBUUUHQVC1B0FQFQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQVQdBUSUHQVG1B0FSFQdBUjUHQVH1B0FRhQdBUNUHQVAVB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVAFB0FQBQdBUAUHQVBVB0FQxQdBUPPrI72kMMOyEAAAAASUVORK5CYII=" 
         alt="Spline preview" 
         style={{ width: '100%', height: '100%' }}
       />
@@ -363,7 +363,7 @@ export default function HomePage() {
               {/* Minutes */}
               <div className="w-[240px] h-[180px] grainy-bg p-6 relative rounded-[32px]">
                 <div className="text-sm font-semibold tracking-wider uppercase absolute top-6 left-6">
-                  MINS
+                  MINUTES
                 </div>
                 <div 
                   className="text-[120px] font-normal absolute top-2 right-6"
@@ -376,7 +376,7 @@ export default function HomePage() {
               {/* Seconds */}
               <div className="w-[240px] h-[180px] grainy-bg p-6 relative rounded-[32px]">
                 <div className="text-sm font-semibold tracking-wider uppercase absolute top-6 left-6">
-                  SECS
+                  SECONDS
                 </div>
                 <div 
                   className="text-[120px] font-normal absolute top-2 right-6"
@@ -419,7 +419,7 @@ export default function HomePage() {
               {/* Minutes */}
               <div className="h-[132px] grainy-bg p-4 relative rounded-[20px]">
                 <div className="text-xs font-semibold tracking-wider uppercase absolute top-3 left-4">
-                  MINS
+                  MINUTES
                 </div>
                 <div 
                   className="text-[72px] font-normal absolute bottom-[-12px] right-4"
@@ -432,7 +432,7 @@ export default function HomePage() {
               {/* Seconds */}
               <div className="h-[132px] grainy-bg p-4 relative rounded-[20px]">
                 <div className="text-xs font-semibold tracking-wider uppercase absolute top-3 left-4">
-                  SECS
+                  SECONDS
                 </div>
                 <div 
                   className="text-[72px] font-normal absolute bottom-[-12px] right-4"
@@ -505,7 +505,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-[60px] md:text-[60px] text-[32px] leading-[72px] md:leading-[72px] leading-[36px] font-bold absolute md:absolute static mobile-category-gap" style={{top: '120px', left: '32px'}}>APPS</h3>
                 <p className="text-xl md:text-xl text-base leading-8 md:leading-8 leading-6 font-normal absolute bottom-8 left-8 right-8 md:absolute md:bottom-8 md:left-8 md:right-8 static mobile-eyebrow-gap">
-                  For mobile, desktop, or web applications designed to solve a problem, increase productivity, or offer a unique service. This includes tools, plugins, and SaaS products.
+                  For applications that solve real problems—whether mobile, desktop, or web. From productivity tools to SaaS innovations, show us how AI helped you build something useful.
                 </p>
               </div>
 
@@ -518,7 +518,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-[60px] md:text-[60px] text-[32px] leading-[72px] md:leading-[72px] leading-[36px] font-bold absolute md:absolute static mobile-category-gap" style={{top: '120px', left: '32px'}}>GAMES</h3>
                 <p className="text-xl md:text-xl text-base leading-8 md:leading-8 leading-6 font-normal absolute bottom-8 left-8 right-8 md:absolute md:bottom-8 md:left-8 md:right-8 static mobile-eyebrow-gap">
-                  For games of any genre and platform, from simple web-based puzzles to more complex immersive worlds.
+                  For games that push creative boundaries. Whether it's a web-based puzzle, an immersive world, or an experimental interactive experience—show us how AI became your creative collaborator.
                 </p>
               </div>
 
@@ -567,7 +567,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-[32px] leading-[36px] font-bold mb-4 mobile-category-gap" style={{letterSpacing: '-2%'}}>APPS</h3>
               <p className="text-base leading-6 font-normal mobile-eyebrow-gap">
-                For mobile, desktop, or web applications designed to solve a problem, increase productivity, or offer a unique service. This includes tools, plugins, and SaaS products.
+                                  For applications that solve real problems—whether mobile, desktop, or web. From productivity tools to SaaS innovations, show us how AI helped you build something useful.
               </p>
             </div>
             <div className="w-[300px] mobile-section bg-[#F3F3F3] rounded-[20px] grainy-bg mobile-padding flex-shrink-0">
@@ -578,7 +578,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-[32px] leading-[36px] font-bold mb-4 mobile-category-gap" style={{letterSpacing: '-2%'}}>GAMES</h3>
               <p className="text-base leading-6 font-normal mobile-eyebrow-gap">
-                For games of any genre and platform, from simple web-based puzzles to more complex immersive worlds.
+                                  For games that push creative boundaries. Whether it's a web-based puzzle, an immersive world, or an experimental interactive experience—show us how AI became your creative collaborator.
               </p>
             </div>
             <div className="w-[300px] mobile-section bg-[#F3F3F3] rounded-[20px] grainy-bg mobile-padding flex-shrink-0">
@@ -706,7 +706,7 @@ export default function HomePage() {
               className="h-16 w-auto mb-4 md:mb-0"
             />
             <p className="text-sm font-semibold tracking-wider uppercase">
-              @2025 ALL RIGHTS RESERVED
+              © 2025 ALL RIGHTS RESERVED
             </p>
           </div>
         </footer>
@@ -731,7 +731,7 @@ export default function HomePage() {
                   value={newsletterForm.email}
                   onChange={(e) => setNewsletterForm({...newsletterForm, email: e.target.value})}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="your@email.com"
+                  placeholder="creator@example.com"
                 />
               </div>
               
@@ -809,7 +809,7 @@ export default function HomePage() {
           <div className="bg-white rounded-lg p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">Submit Your Project</h2>
             <p className="text-gray-600 mb-6">
-              Share your AI-assisted creation with the community.
+              Share your AI-native creation with the community.
             </p>
             
             {/* Step Indicator */}
