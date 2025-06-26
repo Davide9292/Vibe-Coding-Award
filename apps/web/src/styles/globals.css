@@ -331,6 +331,26 @@
     height: 280px;
   }
 
+  /* Landscape screen breakpoint - screens narrower than 1440px */
+  @media (min-width: 769px) and (max-width: 1439px) {
+    .h-\[460px\] {
+      height: 600px !important;
+    }
+    
+    .min-h-\[460px\] {
+      min-height: 600px !important;
+    }
+    
+    .mobile-spline {
+      height: 600px !important;
+    }
+    
+    /* Reduce category title font size to 48px in landscape */
+    .text-\[60px\] {
+      font-size: 48px !important;
+    }
+  }
+
   /* Text size utilities */
   .text-\[120px\] {
     font-size: 120px;

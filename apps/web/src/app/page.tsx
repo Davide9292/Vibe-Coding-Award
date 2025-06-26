@@ -113,7 +113,7 @@ export default function HomePage() {
   const typingText2Ref = useRef<HTMLParagraphElement>(null);
 
   // Original text content for typing animation
-  const originalText1 = "That 2 AM idea brought to life with Lovable. </br> The interface built not from a spec, but from a conversation. Your best work isn't on a roadmap. </br> It's born from your dialogue with AI.";
+  const originalText1 = "That 2 AM idea brought to life with Lovable. <br/> The interface built not from a spec, but from a conversation. Your best work isn't on a roadmap. <br/> It's born from your dialogue with AI.";
   const originalText2 = "We are here to provide a stage for this new craft, to study its patterns, and to celebrate the remarkable work born from the synergy between human vision and machine intelligence.";
 
   const [newsletterForm, setNewsletterForm] = useState<NewsletterFormData>({
@@ -176,26 +176,61 @@ export default function HomePage() {
       if (!textRef.current || !sectionRef.current) return;
 
       // Start with empty text
-      textRef.current.textContent = '';
+      textRef.current.innerHTML = '';
 
       // Check if mobile
       const isMobile = window.innerWidth <= 768;
 
-      // Create the typing animation
-      gsap.to(textRef.current, {
-        text: {
-          value: originalText
-        },
-        duration: 3, // Duration of typing animation
+      // Process text to handle HTML tags
+      const processTextWithHTML = (text: string, progress: number) => {
+        // Replace <br/> with placeholders for processing
+        const parts = text.split('<br/>');
+        let totalChars = 0;
+        let processedParts: string[] = [];
+        
+        // Calculate total character count excluding HTML tags
+        const totalTextLength = parts.join('').length;
+        const currentLength = Math.floor(totalTextLength * progress);
+        
+        let charsSoFar = 0;
+        for (let i = 0; i < parts.length; i++) {
+          const part = parts[i];
+          if (charsSoFar + part.length <= currentLength) {
+            processedParts.push(part);
+            charsSoFar += part.length;
+          } else {
+            const remainingChars = currentLength - charsSoFar;
+            if (remainingChars > 0) {
+              processedParts.push(part.substring(0, remainingChars));
+            }
+            break;
+          }
+        }
+        
+        return processedParts.join('<br/>');
+      };
+
+      // Create the typing animation using a custom approach
+      gsap.to({}, {
+        duration: 4, // Increased duration to ensure completion
         ease: "none",
         scrollTrigger: {
           trigger: sectionRef.current,
           pin: sectionRef.current,
           start: isMobile ? "top 20px" : "center center", // Mobile: pin at 20px from top
-          end: isMobile ? "bottom 20px" : "center -100px",
+          end: isMobile ? "bottom 20px" : "center -200px", // Extended end position for more scroll distance
           scrub: true,
           markers: false, // Remove in production
           onUpdate: (self) => {
+            // Update text content based on progress
+            const processedText = processTextWithHTML(originalText, self.progress);
+            textRef.current!.innerHTML = processedText;
+            
+            // Ensure text completes even if scroll ends early
+            if (self.progress >= 0.95) {
+              textRef.current!.innerHTML = originalText;
+            }
+            
             // Optional: Add cursor effect during typing
             if (self.progress < 1) {
               textRef.current!.style.borderRight = '2px solid black';
@@ -203,6 +238,11 @@ export default function HomePage() {
               textRef.current!.style.borderRight = 'none';
             }
           }
+        },
+        onComplete: () => {
+          // Ensure text is complete when animation finishes
+          textRef.current!.innerHTML = originalText;
+          textRef.current!.style.borderRight = 'none';
         }
       });
     };
@@ -329,7 +369,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center justify-center flex-1 mt-[135px] md:mt-[135px] mobile-hero-content">
             {/* Text below logo - 64px gap on mobile */}
             <p className="text-lg md:text-xl font-medium leading-7 mb-12 md:mb-12 mb-8 text-center text-color mobile-hero-text">
-              The stage opens for AI-native creation in:
+              The stage for AI-native creations opens in:
             </p>
 
             {/* Countdown Timer - 240x180px boxes on desktop, 2x2 grid on mobile */}
