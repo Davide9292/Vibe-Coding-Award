@@ -337,11 +337,11 @@ export default function HomePage() {
   };
 
   const openContact = () => {
-    window.open('mailto:info@vibecodingawards.com?subject=General%20Inquiry%20-%20Vibe%20Coding%20Award', '_blank');
+    window.open('mailto:info@vibecodingaward.com?subject=General%20Inquiry%20-%20Vibe%20Coding%20Award', '_blank');
   };
 
   const openPartnership = () => {
-    window.open('mailto:info@vibecodingawards.com?subject=Partnership%20and%20Industry%20Collaboration%20Inquiry', '_blank');
+    window.open('mailto:info@vibecodingaward.com?subject=Partnership%20and%20Industry%20Collaboration%20Inquiry', '_blank');
   };
 
   if (!mounted) {
@@ -688,7 +688,7 @@ export default function HomePage() {
                   </h3>
                   <button 
                     className="btn-inquire-judging"
-                    onClick={() => window.open('mailto:info@vibecodingawards.com?subject=Judging%20Panel%20Inquiry%20-%20Vibe%20Coding%20Award', '_blank')}
+                    onClick={() => window.open('mailto:judging@vibecodingaward.com?subject=Judging%20Panel%20Inquiry%20-%20Vibe%20Coding%20Award', '_blank')}
                   >
                     INQUIRE ABOUT JUDGING
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 ml-2">
